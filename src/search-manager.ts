@@ -416,8 +416,8 @@ export class SearchManager extends LitElement {
   }
 
   private onMenuListItemSelected(e) {
-    const jlpt = 5 - e.detail.index
-    const candidates = jlpts[jlpt]
+    // const jlpt = 5 - e.detail.index
+    const candidates = jlpts[e.detail.index]
     const random = candidates[~~(Math.random()*candidates.length)]
     this.open(random[0], 'words')
   }
