@@ -9886,13 +9886,15 @@ Select = __decorate([
     n$2('mwc-select')
 ], Select);
 
+function copy(e){if(navigator.clipboard)return navigator.clipboard.writeText(e).catch(function(e){throw void 0!==e?e:new DOMException("The request is not allowed","NotAllowedError")});var o=document.createElement("span");o.textContent=e,o.style.whiteSpace="pre",document.body.appendChild(o);var t=window.getSelection(),r=window.document.createRange();t.removeAllRanges(),r.selectNode(o),t.addRange(r);var n=!1;try{n=window.document.execCommand("copy");}catch(e){console.log("error",e);}return t.removeAllRanges(),window.document.body.removeChild(o),n?Promise.resolve():Promise.reject(new DOMException("The request is not allowed","NotAllowedError"))}
+
 const Langs = ['Japanese', 'French'];
 
 let PasteBox = class PasteBox extends s {
     render() {
         return $ `
     <mwc-dialog heading="Editing Box" style="--mdc-dialog-min-width:calc(100vw - 32px)">
-      <mwc-select name=lang value=${Langs[0]} fixedMenuPosition>
+      <mwc-select name=lang .value=${Langs[0]} fixedMenuPosition>
         ${Langs.map(l => $ `<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
 
@@ -9900,6 +9902,10 @@ let PasteBox = class PasteBox extends s {
 
       <textarea @keyup=${() => this.requestUpdate()}></textarea>
 
+      <mwc-button unelevated slot="secondaryAction" icon=download
+        @click=${() => { this.loadFromRemote(); }}>remote</mwc-button>
+      <mwc-button unelevated slot="secondaryAction" icon=file_copy
+        @click=${() => { this.copyData(); }}>data</mwc-button>
       <mwc-button outlined slot=secondaryAction dialogAction=close>close</mwc-button>
       <mwc-button unelevated slot="primaryAction"
         ?disabled=${!this.submitable}
@@ -9910,23 +9916,39 @@ let PasteBox = class PasteBox extends s {
     get submitable() {
         return this.translationArea && this.translationArea.value && this.sourceArea.value;
     }
+    get translation() {
+        return {
+            lang: this.select.value,
+            translated: this.translationArea.value,
+            source: this.sourceArea.value
+        };
+    }
     submit() {
         if (!this.submitable)
             return;
         this.dispatchEvent(new CustomEvent('upload', {
             composed: true,
             detail: {
-                translation: {
-                    lang: this.select.value,
-                    translated: this.translationArea.value,
-                    source: this.sourceArea.value
-                }
+                translation: this.translation
             }
         }));
         this.dialog.close();
     }
+    copyData() {
+        copy(JSON.stringify(this.translation));
+        window.toast('data copied to clipboard');
+    }
     open() {
         this.dialog.show();
+    }
+    async loadFromRemote() {
+        const response = await fetch('./data.json');
+        const translation = await response.json();
+        if (translation) {
+            this.select.value = translation.lang;
+            this.sourceArea.value = translation.source;
+            this.translationArea.value = translation.translated;
+        }
     }
 };
 PasteBox.styles = r$3 `
@@ -9982,7 +10004,6 @@ let AppContainer = class AppContainer extends s {
                     break;
             }
         }
-        console.log(_parts);
         return $ `
     <header style="display:flex;align-items:center;justify-content:space-between">
       <div></div>
@@ -10020,6 +10041,11 @@ let AppContainer = class AppContainer extends s {
         @click=${() => { this.nextPage(); }}></mwc-icon-button>
     </div>
     ` : w}
+
+    <mwc-icon-button
+        @click=${() => { window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank'); }}>
+      <img src="./img/github.ico">
+    </mwc-icon-button>
 
     <paste-box></paste-box>
     `;

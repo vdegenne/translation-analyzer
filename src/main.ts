@@ -68,8 +68,6 @@ export class AppContainer extends LitElement {
       }
     }
 
-    console.log(_parts)
-
     return html`
     <header style="display:flex;align-items:center;justify-content:space-between">
       <div></div>
@@ -108,6 +106,11 @@ export class AppContainer extends LitElement {
         @click=${()=>{this.nextPage()}}></mwc-icon-button>
     </div>
     ` : nothing }
+
+    <mwc-icon-button
+        @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
+      <img src="./img/github.ico">
+    </mwc-icon-button>
 
     <paste-box></paste-box>
     `
