@@ -209,6 +209,10 @@ export class AppContainer extends LitElement {
     const response = await fetch(`https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(word)}`)
 
     const translations = await response.json()
+    if (translations.length === 0) {
+      window.toast('no results')
+      return
+    }
 
     this.pasteBox.load({
       lang: 'Japanese',
