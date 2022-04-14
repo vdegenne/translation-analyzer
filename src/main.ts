@@ -6,10 +6,12 @@ import '@material/mwc-icon-button'
 // import '@material/mwc-dialog'
 // import '@material/mwc-textfield'
 // import '@material/mwc-checkbox'
+import './search-manager'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
+import {SearchManager} from "./search-manager";
 
 declare global {
   interface Window {
@@ -32,20 +34,50 @@ export class AppContainer extends LitElement {
   // next hidden part
   @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
 
+  @query('search-manager') searchManager!: SearchManager;
+
   static styles = css`
-  .part {
+    :host {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  .part[hide] {
     user-select: none;
-  }
-  .source {
     cursor: pointer;
+  }
+  .paragraph {
+    font-size: 3em;
   }
   .paragraph:not([selected]) {
     display: none;
+  }
+  .source {
+    /* cursor: pointer; */
+    font-family: 'Shippori Mincho', serif;
   }
   [hide] {
     background-color: #e0e0e0 !important;
     color: transparent !important;
   }
+    
+    header {
+      width: 100%;
+      position: absolute;
+      top: 0;
+    }
+    
+    #paragraph-controls {
+      display: flex;
+      align-content: center;
+      justify-content: space-between;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      padding: 24px;
+      box-sizing: border-box;
+    }
   `
 
   render () {
@@ -70,16 +102,23 @@ export class AppContainer extends LitElement {
 
     return html`
     <header style="display:flex;align-items:center;justify-content:space-between">
-      <div></div>
-      <mwc-icon-button icon=settings
-        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
+      <div style="flex: 1"></div>
+      <mwc-icon-button icon="search"
+                      @click=${()=>{this.searchManager.open()}}>
+      </mwc-icon-button>
+      <mwc-icon-button
+              @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
+          <img src="./img/github.ico">
+      </mwc-icon-button>
+      <mwc-icon-button icon=settings 
+                       @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
     </header>
 
-    <div id=paragraphs @click=${e=>{this.onParagraphClick()}}>
+    <div id=paragraphs>
       ${this.translation ? html`
        <!-- for each paragraph -->
        ${_parts.map((paragraph, i)=>{
-         console.log(this.translation)
+         // console.log(this.translation)
          const translatedParagraph = this.translation!.translated.split('\n').filter(p=>p)[i]
          return html`
          <div class=paragraph ?selected=${this.paragraphIndex === i}>
@@ -96,7 +135,7 @@ export class AppContainer extends LitElement {
     </div>
 
     ${this.translation && _parts.length > 1 ? html`
-    <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+    <div id=paragraph-controls style="display:flex;align-items:center;justify-content:space-between;width:100%">
       <mwc-icon-button icon=arrow_back
         ?disabled=${this.paragraphIndex === 0}
         @click=${()=>{this.previousPage()}}></mwc-icon-button>
@@ -106,18 +145,21 @@ export class AppContainer extends LitElement {
         @click=${()=>{this.nextPage()}}></mwc-icon-button>
     </div>
     ` : nothing }
-
-    <mwc-icon-button
-        @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
-      <img src="./img/github.ico">
-    </mwc-icon-button>
-
+    
     <paste-box></paste-box>
+    
+    <search-manager></search-manager>
     `
   }
 
   protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     this.addEventListener('upload', e=>this.load((e as CustomEvent).detail.translation))
+    this.addEventListener('click', (e) => {
+      const target = e.composedPath()[0] as HTMLElement
+      if (target.classList.contains('part') && target.hasAttribute('hide')) {
+        this.onParagraphClick()
+      }
+    })
   }
 
   previousPage () {
@@ -159,5 +201,19 @@ export class AppContainer extends LitElement {
         this._parts = paragraphs.map(p=>p.split(''))
         break
     }
+  }
+
+  public async fetchTranslations (word: string) {
+    const response = await fetch(`https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(word)}`)
+
+    const translations = await response.json()
+
+    this.pasteBox.load({
+      lang: 'Japanese',
+      source: translations.map(t=>t.j).join('\n'),
+      translated: translations.map(t=>t.e).join('\n')
+    })
+    this.pasteBox.submit()
+    this.searchManager.close()
   }
 }

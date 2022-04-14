@@ -90,9 +90,14 @@ export class PasteBox extends LitElement {
     const response = await fetch('./data.json')
     const translation=await response.json() as Translation
     if (translation) {
-      this.select.value = translation.lang
-      this.sourceArea.value = translation.source
-      this.translationArea.value = translation.translated
+      this.load(translation)
     }
+  }
+
+  load(translation: Translation) {
+    this.select.value = translation.lang
+    this.sourceArea.value = translation.source
+    this.translationArea.value = translation.translated
+    this.requestUpdate()
   }
 }
