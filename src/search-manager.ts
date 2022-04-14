@@ -162,7 +162,7 @@ export class SearchManager extends LitElement {
           <div style="position: relative">
             <mwc-icon-button icon="casino" @click=${(e)=>{this.onCasinoButtonClick(e)}}></mwc-icon-button>
             <mwc-menu fixed
-                    @selected=${(e)=>{this.onMenuListItemSelected(e)}}>
+                    @action=${(e)=>{this.onMenuListItemAction(e)}}>
                 <mwc-list-item>
                     <span>jlpt5</span>
                 </mwc-list-item>
@@ -415,7 +415,8 @@ export class SearchManager extends LitElement {
     // this.open()
   }
 
-  private onMenuListItemSelected(e) {
+  private onMenuListItemAction(e) {
+    console.log('fack!')
     // const jlpt = 5 - e.detail.index
     const candidates = jlpts[e.detail.index]
     const random = candidates[~~(Math.random()*candidates.length)]
