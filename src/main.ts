@@ -103,15 +103,17 @@ export class AppContainer extends LitElement {
     return html`
     <header style="display:flex;align-items:center;justify-content:space-between">
       <div style="flex: 1"></div>
-      <mwc-icon-button icon="search"
-                      @click=${()=>{this.searchManager.open()}}>
-      </mwc-icon-button>
-      <mwc-icon-button
-              @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
-          <img src="./img/github.ico">
-      </mwc-icon-button>
+        <mwc-icon-button icon="search"
+                         @click=${() => {
+                             this.onSearchButtonClick()
+                         }}>
+        </mwc-icon-button>
       <mwc-icon-button icon=settings 
                        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
+        <mwc-icon-button
+                @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
+            <img src="./img/github.ico">
+        </mwc-icon-button>
     </header>
 
     <div id=paragraphs>
@@ -215,5 +217,15 @@ export class AppContainer extends LitElement {
     })
     this.pasteBox.submit()
     this.searchManager.close()
+  }
+
+  private onSearchButtonClick() {
+    const selection = document.getSelection()!.toString()
+    if (selection) {
+      this.searchManager.open(selection, 'words')
+    }
+    else {
+      this.searchManager.open()
+    }
   }
 }

@@ -81,7 +81,7 @@ export class SearchManager extends LitElement {
   @state() query: string = '';
   @state() result: SearchItem[] = []
 
-  @state() showKanjiResult = true
+  @state() showKanjiResult = false
   @state() showWordsResult = true
 
   // private _searchCache: {[query:string]: SearchItem[]} = {}
@@ -143,11 +143,43 @@ export class SearchManager extends LitElement {
 
       <!-- SEARCH BAR -->
       <div style="display:flex;align-items:center;position:relative">
-        <mwc-textfield .value=${this.query}
-          @keypress=${e=>{if (e.key === 'Enter') {this.search(this.textfield.value)}}}
-          iconTrailing=close></mwc-textfield>
-        <mwc-icon-button icon=close style="position:absolute;top:4px;right:4px;"
-          @click=${()=>{this.query='';this.textfield.value = '';this.textfield.focus()}}></mwc-icon-button>
+          <div style="position:relative;flex:1">
+              <mwc-textfield .value=${this.query}
+                             @keypress=${e => {
+                                 if (e.key === 'Enter') {
+                                     this.search(this.textfield.value)
+                                 }
+                             }}
+                             iconTrailing=close></mwc-textfield>
+              <mwc-icon-button icon=close style="position:absolute;top:4px;right:4px;"
+                               @click=${() => {
+                                   this.query = '';
+                                   this.textfield.value = '';
+                                   this.textfield.focus()
+                               }}></mwc-icon-button>
+          </div>
+
+          <div style="position: relative">
+            <mwc-icon-button icon="casino" @click=${(e)=>{this.onCasinoButtonClick(e)}}></mwc-icon-button>
+            <mwc-menu fixed
+                    @selected=${(e)=>{this.onMenuListItemSelected(e)}}>
+                <mwc-list-item>
+                    <span>jlpt5</span>
+                </mwc-list-item>
+                <mwc-list-item>
+                    <span>jlpt4</span>
+                </mwc-list-item>
+                <mwc-list-item>
+                    <span>jlpt3</span>
+                </mwc-list-item>
+                <mwc-list-item>
+                    <span>jlpt2</span>
+                </mwc-list-item>
+                <mwc-list-item>
+                    <span>jlpt1</span>
+                </mwc-list-item>
+            </mwc-menu>
+          </div>
       </div>
       <!-- choice checkboxes -->
       <div>
@@ -256,7 +288,9 @@ export class SearchManager extends LitElement {
       const result: SearchItem[] =
         jlpts[n]
           .filter(e=>{
-            return e[0].includes(this.query!) || e[2].includes(this.query!)
+            return e[0].includes(this.query!)
+              || (e[1] && e[1].includes(this.query!))
+              || e[2].includes(this.query!)
           })
           .map(r=>{
             return this.attachFrequencyValue({
@@ -373,6 +407,20 @@ export class SearchManager extends LitElement {
     this.dialog.close()
   }
 
+  private onCasinoButtonClick(e) {
+    const button = e.target
+    const menu = button.nextElementSibling
+    menu.anchor = button
+    menu.show()
+    // this.open()
+  }
+
+  private onMenuListItemSelected(e) {
+    const jlpt = 5 - e.detail.index
+    const candidates = jlpts[jlpt]
+    const random = candidates[~~(Math.random()*candidates.length)]
+    this.open(random[0], 'words')
+  }
 }
 
 
