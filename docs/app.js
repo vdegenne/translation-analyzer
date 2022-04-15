@@ -1542,10 +1542,6 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
           <span style="font-family:'Sawarabi Mincho'">${this.item.word}</span>
         </mwc-list-item>
         <li divider role="separator"></li>
-        <mwc-list-item graphic=icon @click=${()=>{window.app.fetchTranslations(this.item.word)}}>
-            <span>Fetch translations</span>
-            <mwc-icon slot="graphic" style="color:#f44336">archive</mwc-icon>
-        </mwc-list-item>
         <!-- google images -->
         <mwc-list-item id="google-images" graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`http://www.google.com/search?q=${encodeURIComponent(e)}&tbm=isch`,"_blank")}}>
           <span>Google Images</span>
@@ -1569,6 +1565,10 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
           <img src="./img/tatoeba.ico" slot="graphic">
         </mwc-list-item>
         <li divider role=separator padded></li>
+        <mwc-list-item graphic=icon @click=${()=>{window.app.fetchTranslations(this.item.word)}}>
+            <span>Fetch translations</span>
+            <mwc-icon slot="graphic" style="color:#f44336">archive</mwc-icon>
+        </mwc-list-item>
         <!-- listen -->
         <mwc-list-item id="listen" graphic=icon @click=${()=>{Xt(this.item.hiragana||this.item.word)}}>
           <span>Listen</span>
