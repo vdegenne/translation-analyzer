@@ -416,7 +416,6 @@ export class SearchManager extends LitElement {
   }
 
   private onMenuListItemAction(e) {
-    console.log('fack!')
     // const jlpt = 5 - e.detail.index
     const candidates = jlpts[e.detail.index]
     const random = candidates[~~(Math.random()*candidates.length)]
