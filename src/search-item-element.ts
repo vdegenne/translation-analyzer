@@ -7,6 +7,7 @@ import { getKanjiData, googleImageSearch, jisho, mdbg, naver, playJapaneseAudio,
 import {SearchItem} from './search-manager'
 
 import '@material/mwc-menu'
+import { ListItem } from '@material/mwc-list/mwc-list-item';
 
 import './concealable-span'
 import { Menu } from '@material/mwc-menu';
@@ -22,6 +23,11 @@ export class SearchItemElement extends LitElement {
 
   @query('#anchor') anchor!: HTMLDivElement;
   @query('mwc-menu') menu!: Menu;
+  @query('mwc-list-item#google-images') googleImagesListItem!: ListItem;
+  @query('mwc-list-item#jisho') jishoListItem!: ListItem;
+  @query('mwc-list-item#mdbg') mdbgListItem!: ListItem;
+  @query('mwc-list-item#naver') naverListItem!: ListItem;
+  @query('mwc-list-item#listen') listenListItem!: ListItem;
   @queryAll('concealable-span') concealableSpans!: ConcealableSpan[];
   @queryAll('concealable-span[concealed]') concealedSpans!: ConcealableSpan[];
 
@@ -56,30 +62,30 @@ export class SearchItemElement extends LitElement {
             <mwc-icon slot="graphic" style="color:#f44336">archive</mwc-icon>
         </mwc-list-item>
         <!-- google images -->
-        <mwc-list-item graphic=icon @click=${()=>{googleImageSearch(this.item.word)}}>
+        <mwc-list-item id="google-images" graphic=icon @click=${()=>{googleImageSearch(this.item.word)}}>
           <span>Google Images</span>
           <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
         </mwc-list-item>
         <!-- jisho -->
-        <mwc-list-item graphic=icon @click=${()=>{jisho(this.item.word)}}>
+        <mwc-list-item id="jisho" graphic=icon @click=${()=>{jisho(this.item.word)}}>
           <span>Jisho</span>
           <img src="./img/jisho.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{mdbg(this.item.word)}}>
+        <mwc-list-item id="mdbg" graphic=icon @click=${()=>{mdbg(this.item.word)}}>
           <span>MDBG</span>
           <img src="./img/mdbg.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{naver(this.item.word)}}>
+        <mwc-list-item id="naver" graphic=icon @click=${()=>{naver(this.item.word)}}>
           <span>Naver</span>
           <img src="./img/naver.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{tatoeba(this.item.word)}}>
+        <mwc-list-item id="tatoeba" graphic=icon @click=${()=>{tatoeba(this.item.word)}}>
           <span>Tatoeba</span>
           <img src="./img/tatoeba.ico" slot="graphic">
         </mwc-list-item>
         <li divider role=separator padded></li>
         <!-- listen -->
-        <mwc-list-item graphic=icon @click=${()=>{playJapaneseAudio(this.item.hiragana || this.item.word)}}>
+        <mwc-list-item id="listen" graphic=icon @click=${()=>{playJapaneseAudio(this.item.hiragana || this.item.word)}}>
           <span>Listen</span>
           <mwc-icon slot=graphic>volume_up</mwc-icon>
         </mwc-list-item>
@@ -133,6 +139,27 @@ export class SearchItemElement extends LitElement {
       if (e.button === 2) {
         document.body.click() // close all others menu
         this.onRightClick(e)
+      }
+    })
+
+
+    this.addEventListener('keypress', (e)=>{
+      if (this.menu.open) {
+        if (e.key == 'a') {
+          this.googleImagesListItem.click()
+        }
+        if (e.key=='s') {
+          this.listenListItem.click()
+        }
+        if (e.key=='g') {
+          this.jishoListItem.click()
+        }
+        if (e.key=='h') {
+          this.mdbgListItem.click()
+        }
+        if (e.key=='n') {
+          this.naverListItem.click()
+        }
       }
     })
   }

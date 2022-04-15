@@ -34,7 +34,7 @@ import jlpt1 from '../docs/data/jlpt1-words.json'
 import { sharedStyles } from './styles/sharedStyles';
 import { Menu } from '@material/mwc-menu';
 import { SearchItemElement } from './search-item-element';
-const jlpts: JlptWordEntry[][] = [
+export const jlpts: JlptWordEntry[][] = [
   jlpt5 as JlptWordEntry[],
   // [],
 
@@ -274,11 +274,14 @@ export class SearchManager extends LitElement {
       this._history.pushHistory(query)
     }
 
+    this.result = this.searchData(query)
+  }
+
+  public searchData (query: string) {
     // if the search is cached we give the cached version first
     const cached = this._history.getCachedQuery(query)
     if (cached) {
-      this.result = cached
-      return
+      return cached
     }
 
     let searchResult: SearchItem[] = []
@@ -288,9 +291,9 @@ export class SearchManager extends LitElement {
       const result: SearchItem[] =
         jlpts[n]
           .filter(e=>{
-            return e[0].includes(this.query!)
-              || (e[1] && e[1].includes(this.query!))
-              || e[2].includes(this.query!)
+            return e[0].includes(query!)
+              || (e[1] && e[1].includes(query!))
+              || e[2].includes(query!)
           })
           .map(r=>{
             return this.attachFrequencyValue({
@@ -371,8 +374,8 @@ export class SearchManager extends LitElement {
 
     // cache the result
     this._history.addToCache(query, searchResult)
-    // finally update the view
-    this.result = searchResult
+
+    return searchResult
   }
 
   attachFrequencyValue (item: SearchItem) {

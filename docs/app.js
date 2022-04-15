@@ -1547,30 +1547,30 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
             <mwc-icon slot="graphic" style="color:#f44336">archive</mwc-icon>
         </mwc-list-item>
         <!-- google images -->
-        <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`http://www.google.com/search?q=${encodeURIComponent(e)}&tbm=isch`,"_blank")}}>
+        <mwc-list-item id="google-images" graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`http://www.google.com/search?q=${encodeURIComponent(e)}&tbm=isch`,"_blank")}}>
           <span>Google Images</span>
           <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
         </mwc-list-item>
         <!-- jisho -->
-        <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://jisho.org/search/${encodeURIComponent(e)}`,"_blank")}}>
+        <mwc-list-item id="jisho" graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://jisho.org/search/${encodeURIComponent(e)}`,"_blank")}}>
           <span>Jisho</span>
           <img src="./img/jisho.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=${encodeURIComponent(e)}`,"_blank")}}>
+        <mwc-list-item id="mdbg" graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=${encodeURIComponent(e)}`,"_blank")}}>
           <span>MDBG</span>
           <img src="./img/mdbg.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{Yt(this.item.word)}}>
+        <mwc-list-item id="naver" graphic=icon @click=${()=>{Yt(this.item.word)}}>
           <span>Naver</span>
           <img src="./img/naver.ico" slot="graphic">
         </mwc-list-item>
-        <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://tatoeba.org/en/sentences/search?from=jpn&query=${encodeURIComponent(e)}&to=`,"_blank")}}>
+        <mwc-list-item id="tatoeba" graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://tatoeba.org/en/sentences/search?from=jpn&query=${encodeURIComponent(e)}&to=`,"_blank")}}>
           <span>Tatoeba</span>
           <img src="./img/tatoeba.ico" slot="graphic">
         </mwc-list-item>
         <li divider role=separator padded></li>
         <!-- listen -->
-        <mwc-list-item graphic=icon @click=${()=>{Xt(this.item.hiragana||this.item.word)}}>
+        <mwc-list-item id="listen" graphic=icon @click=${()=>{Xt(this.item.hiragana||this.item.word)}}>
           <span>Listen</span>
           <mwc-icon slot=graphic>volume_up</mwc-icon>
         </mwc-list-item>
@@ -1609,7 +1609,7 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
     <!-- <span class=english>Click the menu to search on external sites.</span> -->
     `}
 
-    `}firstUpdated(e){this.addEventListener("contextmenu",(e=>e.preventDefault())),this.menu.anchor=this.anchor,this.addEventListener("pointerdown",(e=>{2===e.button&&(document.body.click(),this.onRightClick(e))}))}reveal(){this.revealed=!0,this.concealableSpans.forEach((e=>e.concealed=!1))}conceal(){this.revealed=!1,this.concealableSpans.forEach((e=>e.concealed=!0))}async onRightClick(e){const t=this.getBoundingClientRect(),o=e.clientX-t.left,r=e.clientY-t.top;this.moveAnchorTo(o,r),this.menu.show()}moveAnchorTo(e,t){this.anchor.style.left=`${e}px`,this.anchor.style.top=`${t}px`}onSpeakerClick(e){const t=e.target;let o=t.parentElement.querySelector(".hiragana");null===o&&(o=t.parentElement.querySelector(".word")),Xt(o.innerText.trim())}hasConcealedSpans(){return this.concealedSpans.length>0}};ra.styles=[ea,oa],r([ve({type:Object})],ra.prototype,"item",void 0),r([we()],ra.prototype,"revealed",void 0),r([_e("#anchor")],ra.prototype,"anchor",void 0),r([_e("mwc-menu")],ra.prototype,"menu",void 0),r([Ee("concealable-span")],ra.prototype,"concealableSpans",void 0),r([Ee("concealable-span[concealed]")],ra.prototype,"concealedSpans",void 0),ra=r([be("search-item-element")],ra);let ia=class extends he{constructor(e){super(),this._cached={},this._history=[],this.index=-1,this.searchManager=e}render(){return L`
+    `}firstUpdated(e){this.addEventListener("contextmenu",(e=>e.preventDefault())),this.menu.anchor=this.anchor,this.addEventListener("pointerdown",(e=>{2===e.button&&(document.body.click(),this.onRightClick(e))})),this.addEventListener("keypress",(e=>{this.menu.open&&("a"==e.key&&this.googleImagesListItem.click(),"s"==e.key&&this.listenListItem.click(),"g"==e.key&&this.jishoListItem.click(),"h"==e.key&&this.mdbgListItem.click(),"n"==e.key&&this.naverListItem.click())}))}reveal(){this.revealed=!0,this.concealableSpans.forEach((e=>e.concealed=!1))}conceal(){this.revealed=!1,this.concealableSpans.forEach((e=>e.concealed=!0))}async onRightClick(e){const t=this.getBoundingClientRect(),o=e.clientX-t.left,r=e.clientY-t.top;this.moveAnchorTo(o,r),this.menu.show()}moveAnchorTo(e,t){this.anchor.style.left=`${e}px`,this.anchor.style.top=`${t}px`}onSpeakerClick(e){const t=e.target;let o=t.parentElement.querySelector(".hiragana");null===o&&(o=t.parentElement.querySelector(".word")),Xt(o.innerText.trim())}hasConcealedSpans(){return this.concealedSpans.length>0}};ra.styles=[ea,oa],r([ve({type:Object})],ra.prototype,"item",void 0),r([we()],ra.prototype,"revealed",void 0),r([_e("#anchor")],ra.prototype,"anchor",void 0),r([_e("mwc-menu")],ra.prototype,"menu",void 0),r([_e("mwc-list-item#google-images")],ra.prototype,"googleImagesListItem",void 0),r([_e("mwc-list-item#jisho")],ra.prototype,"jishoListItem",void 0),r([_e("mwc-list-item#mdbg")],ra.prototype,"mdbgListItem",void 0),r([_e("mwc-list-item#naver")],ra.prototype,"naverListItem",void 0),r([_e("mwc-list-item#listen")],ra.prototype,"listenListItem",void 0),r([Ee("concealable-span")],ra.prototype,"concealableSpans",void 0),r([Ee("concealable-span[concealed]")],ra.prototype,"concealedSpans",void 0),ra=r([be("search-item-element")],ra);let ia=class extends he{constructor(e){super(),this._cached={},this._history=[],this.index=-1,this.searchManager=e}render(){return L`
         ${this.index>0?L`
             <mwc-button unelevated icon="arrow_back"
                 @click=${()=>this.back()}>${this._history[this.index-1]}</mwc-button>
@@ -1696,7 +1696,7 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
       </mwc-formfield>
       <mwc-button outlined slot="secondaryAction" dialogAction="close">close</mwc-button>
     </mwc-dialog>
-    `}async updated(){await Promise.all([...this.searchItemElements].map((e=>e.updateComplete)))}firstUpdated(e){const t=()=>{this.dialog.shadowRoot.querySelector(".mdc-dialog__surface").style.minHeight="calc(100% - 32px)",this.dialog.removeEventListener("opened",t)};this.dialog.addEventListener("opened",t),this.textfield.updateComplete.then((()=>{this.textfield.shadowRoot.querySelector("i").style.color="transparent"}))}search(e,t=!0){if(e===this.query)return;this.query=e,t&&this._history.pushHistory(e);const o=this._history.getCachedQuery(e);if(o)return void(this.result=o);let r=[];aa.forEach(((t,o)=>{const i=aa[o].filter((e=>e[0].includes(this.query)||e[1]&&e[1].includes(this.query)||e[2].includes(this.query))).map((t=>this.attachFrequencyValue({type:"words",dictionary:"jlpt"+(5-o),word:t[0],english:t[2],hiragana:t[1]||void 0,exactSearch:t[0]===e})));r.push(...i)}));const i=r.find((t=>t.word===e));if(i||r.unshift({type:"words",dictionary:"not found",word:e,exactSearch:!0}),Jt(e))for(const t of e.split("")){if(!Jt(t))continue;const o=Vt.find((e=>e[1]===t));o?r.push(this.attachFrequencyValue({type:"kanji",dictionary:`jlpt${o[2]}`,word:o[1],english:`${o[3]}//${o[4]}`,exactSearch:o[1]===e})):r.push({type:"kanji",dictionary:"not found",word:t,exactSearch:t===e})}else r.push(...Vt.filter((t=>t[3].includes(e)||t[4].includes(e))).sort((function(e,t){return t[2]-e[2]})).map((e=>this.attachFrequencyValue({type:"kanji",dictionary:`jlpt${e[2]}`,word:e[1],english:`${e[3]}//${e[4]}`}))));this._history.addToCache(e,r),this.result=r}attachFrequencyValue(e){const t=Bt.find((t=>t.l===e.word));return t&&(e.frequency=t.f),e}toggleBlindMode(){this.blindMode=!this.blindMode}open(e,t){e&&this.search(e),t&&(this.view=t),this.dialog.show()}close(){this.dialog.close()}onCasinoButtonClick(e){const t=e.target,o=t.nextElementSibling;o.anchor=t,o.show()}onMenuListItemAction(e){console.log("fack!");const t=aa[e.detail.index],o=t[~~(Math.random()*t.length)];this.open(o[0],"words")}};la.styles=[Ht,oa],r([we()],la.prototype,"view",void 0),r([we()],la.prototype,"query",void 0),r([we()],la.prototype,"result",void 0),r([we()],la.prototype,"showKanjiResult",void 0),r([we()],la.prototype,"showWordsResult",void 0),r([_e("search-history")],la.prototype,"_history",void 0),r([we()],la.prototype,"blindMode",void 0),r([_e("mwc-dialog")],la.prototype,"dialog",void 0),r([_e("mwc-textfield")],la.prototype,"textfield",void 0),r([Ee("#words-results search-item-element")],la.prototype,"searchItemElements",void 0),la=r([be("search-manager")],la);
+    `}async updated(){await Promise.all([...this.searchItemElements].map((e=>e.updateComplete)))}firstUpdated(e){const t=()=>{this.dialog.shadowRoot.querySelector(".mdc-dialog__surface").style.minHeight="calc(100% - 32px)",this.dialog.removeEventListener("opened",t)};this.dialog.addEventListener("opened",t),this.textfield.updateComplete.then((()=>{this.textfield.shadowRoot.querySelector("i").style.color="transparent"}))}search(e,t=!0){e!==this.query&&(this.query=e,t&&this._history.pushHistory(e),this.result=this.searchData(e))}searchData(e){const t=this._history.getCachedQuery(e);if(t)return t;let o=[];aa.forEach(((t,r)=>{const i=aa[r].filter((t=>t[0].includes(e)||t[1]&&t[1].includes(e)||t[2].includes(e))).map((t=>this.attachFrequencyValue({type:"words",dictionary:"jlpt"+(5-r),word:t[0],english:t[2],hiragana:t[1]||void 0,exactSearch:t[0]===e})));o.push(...i)}));const r=o.find((t=>t.word===e));if(r||o.unshift({type:"words",dictionary:"not found",word:e,exactSearch:!0}),Jt(e))for(const t of e.split("")){if(!Jt(t))continue;const r=Vt.find((e=>e[1]===t));r?o.push(this.attachFrequencyValue({type:"kanji",dictionary:`jlpt${r[2]}`,word:r[1],english:`${r[3]}//${r[4]}`,exactSearch:r[1]===e})):o.push({type:"kanji",dictionary:"not found",word:t,exactSearch:t===e})}else o.push(...Vt.filter((t=>t[3].includes(e)||t[4].includes(e))).sort((function(e,t){return t[2]-e[2]})).map((e=>this.attachFrequencyValue({type:"kanji",dictionary:`jlpt${e[2]}`,word:e[1],english:`${e[3]}//${e[4]}`}))));return this._history.addToCache(e,o),o}attachFrequencyValue(e){const t=Bt.find((t=>t.l===e.word));return t&&(e.frequency=t.f),e}toggleBlindMode(){this.blindMode=!this.blindMode}open(e,t){e&&this.search(e),t&&(this.view=t),this.dialog.show()}close(){this.dialog.close()}onCasinoButtonClick(e){const t=e.target,o=t.nextElementSibling;o.anchor=t,o.show()}onMenuListItemAction(e){const t=aa[e.detail.index],o=t[~~(Math.random()*t.length)];this.open(o[0],"words")}};la.styles=[Ht,oa],r([we()],la.prototype,"view",void 0),r([we()],la.prototype,"query",void 0),r([we()],la.prototype,"result",void 0),r([we()],la.prototype,"showKanjiResult",void 0),r([we()],la.prototype,"showWordsResult",void 0),r([_e("search-history")],la.prototype,"_history",void 0),r([we()],la.prototype,"blindMode",void 0),r([_e("mwc-dialog")],la.prototype,"dialog",void 0),r([_e("mwc-textfield")],la.prototype,"textfield",void 0),r([Ee("#words-results search-item-element")],la.prototype,"searchItemElements",void 0),la=r([be("search-manager")],la);
 /**
  * @license
  * Copyright 2020 Google Inc.
@@ -1881,7 +1881,7 @@ const va=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
         <mwc-icon-button icon="search"
                          @click=${()=>{this.onSearchButtonClick()}}>
         </mwc-icon-button>
-      <mwc-icon-button icon=settings 
+      <mwc-icon-button icon=settings
                        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
         <mwc-icon-button
                 @click=${()=>{window.open("https://github.com/vdegenne/translation-analyzer/tree/master/docs","_blank")}}>
@@ -1915,11 +1915,11 @@ const va=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
         @click=${()=>{this.nextPage()}}></mwc-icon-button>
     </div>
     `:N}
-    
+
     <paste-box></paste-box>
-    
+
     <search-manager></search-manager>
-    `}firstUpdated(e){this.addEventListener("upload",(e=>this.load(e.detail.translation))),this.addEventListener("click",(e=>{const t=e.composedPath()[0];t.classList.contains("part")&&t.hasAttribute("hide")&&this.onParagraphClick()}))}previousPage(){this.paragraphIndex-1!=-1&&this.paragraphIndex--}nextPage(){this.paragraphIndex+1!==this.paragraphs.length&&this.paragraphIndex++}onParagraphClick(){const e=this.nextHiddenPart;e&&e.removeAttribute("hide")}async load(e){this.translation&&this.translation.lang==e.lang&&this.translation.source==e.source&&this.translation.translated==e.translated||(this.translation=e,this.paragraphIndex=0,await this.updateComplete,this.parts.forEach((e=>{" "!==e.innerText&&e.setAttribute("hide","")})))}async fetchTranslations(e){const t=await fetch(`https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(e)}`),o=await t.json();0!==o.length?(this.pasteBox.load({lang:"Japanese",source:o.map((e=>e.j)).join("\n"),translated:o.map((e=>e.e)).join("\n")}),this.pasteBox.submit(),this.searchManager.close()):window.toast("no results")}onSearchButtonClick(){const e=document.getSelection().toString();e?this.searchManager.open(e,"words"):this.searchManager.open()}};_a.styles=re`
+    `}firstUpdated(e){this.addEventListener("upload",(e=>this.load(e.detail.translation))),this.addEventListener("click",(e=>{const t=e.composedPath()[0];t.classList.contains("part")&&t.hasAttribute("hide")&&this.onParagraphClick()})),window.addEventListener("keypress",(e=>{var t,o;if("s"==e.key){const e=null===(t=document.getSelection())||void 0===t?void 0:t.toString();if(e){const t=this.searchManager.searchData(e).filter((e=>"words"==e.type&&e.exactSearch));if(t.length){Xt(t[0].hiragana||t[0].word)}}}if("1"==e.key){const e=null===(o=document.getSelection())||void 0===o?void 0:o.toString();e&&this.searchManager.open(e,"words")}}))}previousPage(){this.paragraphIndex-1!=-1&&this.paragraphIndex--}nextPage(){this.paragraphIndex+1!==this.paragraphs.length&&this.paragraphIndex++}onParagraphClick(){const e=this.nextHiddenPart;e&&e.removeAttribute("hide")}async load(e){this.translation&&this.translation.lang==e.lang&&this.translation.source==e.source&&this.translation.translated==e.translated||(this.translation=e,this.paragraphIndex=0,await this.updateComplete,this.parts.forEach((e=>{" "!==e.innerText&&e.setAttribute("hide","")})))}async fetchTranslations(e){const t=await fetch(`https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(e)}`),o=await t.json();0!==o.length?(this.pasteBox.load({lang:"Japanese",source:o.map((e=>e.j)).join("\n"),translated:o.map((e=>e.e)).join("\n")}),this.pasteBox.submit(),this.searchManager.close()):window.toast("no results")}onSearchButtonClick(){const e=document.getSelection().toString();e?this.searchManager.open(e,"words"):this.searchManager.open()}};_a.styles=re`
     :host {
       display: flex;
       justify-content: center;
@@ -1944,13 +1944,13 @@ const va=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
     background-color: #e0e0e0 !important;
     color: transparent !important;
   }
-    
+
     header {
       width: 100%;
       position: absolute;
       top: 0;
     }
-    
+
     #paragraph-controls {
       display: flex;
       align-content: center;

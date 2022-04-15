@@ -11,7 +11,8 @@ import './search-manager'
 import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
-import {SearchManager} from "./search-manager";
+import {jlpts, SearchManager} from "./search-manager";
+import { playJapaneseAudio } from './util'
 
 declare global {
   interface Window {
@@ -61,13 +62,13 @@ export class AppContainer extends LitElement {
     background-color: #e0e0e0 !important;
     color: transparent !important;
   }
-    
+
     header {
       width: 100%;
       position: absolute;
       top: 0;
     }
-    
+
     #paragraph-controls {
       display: flex;
       align-content: center;
@@ -108,7 +109,7 @@ export class AppContainer extends LitElement {
                              this.onSearchButtonClick()
                          }}>
         </mwc-icon-button>
-      <mwc-icon-button icon=settings 
+      <mwc-icon-button icon=settings
                        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
         <mwc-icon-button
                 @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
@@ -147,9 +148,9 @@ export class AppContainer extends LitElement {
         @click=${()=>{this.nextPage()}}></mwc-icon-button>
     </div>
     ` : nothing }
-    
+
     <paste-box></paste-box>
-    
+
     <search-manager></search-manager>
     `
   }
@@ -160,6 +161,27 @@ export class AppContainer extends LitElement {
       const target = e.composedPath()[0] as HTMLElement
       if (target.classList.contains('part') && target.hasAttribute('hide')) {
         this.onParagraphClick()
+      }
+    })
+
+    window.addEventListener('keypress', e=>{
+      if (e.key=='s') {
+        const selection = document.getSelection()?.toString()
+        if (selection) {
+          // is the selection in the words
+          const result = this.searchManager.searchData(selection).filter(s=>s.type=='words' && s.exactSearch)
+          if (result.length) {
+            const content = result[0].hiragana || result[0].word
+            playJapaneseAudio(content)
+          }
+          // @TODO else we play synthetic voice
+        }
+      }
+      if (e.key=='1') {
+        const selection = document.getSelection()?.toString()
+        if (selection) {
+          this.searchManager.open(selection, 'words')
+        }
       }
     })
   }
