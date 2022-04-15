@@ -1551,11 +1551,6 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
           <span>Google Images</span>
           <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
         </mwc-list-item>
-        <!-- listen -->
-        <mwc-list-item graphic=icon @click=${()=>{Xt(this.item.hiragana||this.item.word)}}>
-          <span>Listen</span>
-          <mwc-icon slot=graphic>volume_up</mwc-icon>
-        </mwc-list-item>
         <!-- jisho -->
         <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://jisho.org/search/${encodeURIComponent(e)}`,"_blank")}}>
           <span>Jisho</span>
@@ -1572,6 +1567,12 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
         <mwc-list-item graphic=icon @click=${()=>{var e;e=this.item.word,window.open(`https://tatoeba.org/en/sentences/search?from=jpn&query=${encodeURIComponent(e)}&to=`,"_blank")}}>
           <span>Tatoeba</span>
           <img src="./img/tatoeba.ico" slot="graphic">
+        </mwc-list-item>
+        <li divider role=separator padded></li>
+        <!-- listen -->
+        <mwc-list-item graphic=icon @click=${()=>{Xt(this.item.hiragana||this.item.word)}}>
+          <span>Listen</span>
+          <mwc-icon slot=graphic>volume_up</mwc-icon>
         </mwc-list-item>
       </mwc-menu>
     </div>

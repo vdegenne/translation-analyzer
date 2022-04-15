@@ -60,11 +60,6 @@ export class SearchItemElement extends LitElement {
           <span>Google Images</span>
           <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
         </mwc-list-item>
-        <!-- listen -->
-        <mwc-list-item graphic=icon @click=${()=>{playJapaneseAudio(this.item.hiragana || this.item.word)}}>
-          <span>Listen</span>
-          <mwc-icon slot=graphic>volume_up</mwc-icon>
-        </mwc-list-item>
         <!-- jisho -->
         <mwc-list-item graphic=icon @click=${()=>{jisho(this.item.word)}}>
           <span>Jisho</span>
@@ -81,6 +76,12 @@ export class SearchItemElement extends LitElement {
         <mwc-list-item graphic=icon @click=${()=>{tatoeba(this.item.word)}}>
           <span>Tatoeba</span>
           <img src="./img/tatoeba.ico" slot="graphic">
+        </mwc-list-item>
+        <li divider role=separator padded></li>
+        <!-- listen -->
+        <mwc-list-item graphic=icon @click=${()=>{playJapaneseAudio(this.item.hiragana || this.item.word)}}>
+          <span>Listen</span>
+          <mwc-icon slot=graphic>volume_up</mwc-icon>
         </mwc-list-item>
       </mwc-menu>
     </div>
