@@ -201,7 +201,7 @@ export class SearchManager extends LitElement {
         <p>Kanji Results</p>
         ${kanjiResult.length === 0 ? html`no result` : nothing}
         ${kanjiResult.map(i=>{
-          return html`<search-item-element .item=${i} .revealed=${true}></search-item-element>`
+          return html`<search-item-element .item=${i} .searchManager=${this} .revealed=${true}></search-item-element>`
           return html`
           <div class=item>
             <div style="display:flex;justify-content:space-between;margin:12px 0 5px 0;">
@@ -225,7 +225,7 @@ export class SearchManager extends LitElement {
       <div id="words-results" ?hide=${!this.showWordsResult}>
         <p>Words Results</p>
         ${wordsResult.length === 0 ? html`no result` : nothing}
-        ${wordsResult.map(i=>html`<search-item-element .item=${i} .revealed=${!this.blindMode}></search-item-element>`)}
+        ${wordsResult.map(i=>html`<search-item-element .item=${i} .searchManager=${this} .revealed=${!this.blindMode}></search-item-element>`)}
       </div>
 
         <search-history .searchManager="${this}" slot=secondaryAction></search-history>

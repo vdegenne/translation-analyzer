@@ -1585,7 +1585,7 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
       <div class="word" ?exactSearch=${this.item.exactSearch} ?notFound=${"not found"===this.item.dictionary}>
         ${this.item.word.split("").map((e=>{const t=(o=e,Vt.find((e=>e[1]===o)));var o;return L`<span class="character"
             title="${t?`(jlpt${t[2]}) ${t[3]}//${t[4]}`:""}"
-            @click=${e=>{window.searchManager.search(e.target.innerText.trim()),window.searchManager.view="kanji"}}>${e}</span>`}))}
+            @click=${e=>{this.searchManager.open(e.target.innerText.trim(),"kanji")}}>${e}</span>`}))}
       </div>
       ${this.item.hiragana?L`<concealable-span class=hiragana .concealed=${Fo(!this.revealed)}>${this.item.hiragana}</concealable-span>`:N}
       ${"not found"===this.item.dictionary?L`<span class=${e} style="margin-left:6px">${this.item.dictionary}</span>`:N}
@@ -1678,14 +1678,14 @@ const Qi=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
       <div id="kanji-results" ?hide=${!this.showKanjiResult}>
         <p>Kanji Results</p>
         ${0===t.length?L`no result`:N}
-        ${t.map((e=>L`<search-item-element .item=${e} .revealed=${!0}></search-item-element>`))}
+        ${t.map((e=>L`<search-item-element .item=${e} .searchManager=${this} .revealed=${!0}></search-item-element>`))}
       </div>
 
       <!-- WORDS RESULT -->
       <div id="words-results" ?hide=${!this.showWordsResult}>
         <p>Words Results</p>
         ${0===e.length?L`no result`:N}
-        ${e.map((e=>L`<search-item-element .item=${e} .revealed=${!this.blindMode}></search-item-element>`))}
+        ${e.map((e=>L`<search-item-element .item=${e} .searchManager=${this} .revealed=${!this.blindMode}></search-item-element>`))}
       </div>
 
         <search-history .searchManager="${this}" slot=secondaryAction></search-history>

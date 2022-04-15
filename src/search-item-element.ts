@@ -4,7 +4,7 @@ import {classMap} from 'lit/directives/class-map.js'
 import {live} from 'lit/directives/live.js'
 import { searchItemStyles } from './styles/searchItemElementStyles';
 import { getKanjiData, googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba } from './util';
-import {SearchItem} from './search-manager'
+import {SearchItem, SearchManager} from './search-manager'
 
 import '@material/mwc-menu'
 import { ListItem } from '@material/mwc-list/mwc-list-item';
@@ -20,6 +20,8 @@ export class SearchItemElement extends LitElement {
   @property({type: Object }) item!: SearchItem;
 
   @state() revealed: boolean = false;
+
+  private searchManager!: SearchManager;
 
   @query('#anchor') anchor!: HTMLDivElement;
   @query('mwc-menu') menu!: Menu;
@@ -102,7 +104,7 @@ export class SearchItemElement extends LitElement {
           const kanjiData = getKanjiData(c)
           return html`<span class="character"
             title="${kanjiData ? `(jlpt${kanjiData[2]}) ${kanjiData[3]}//${kanjiData[4]}` : ''}"
-            @click=${e=>{window.searchManager.search(e.target.innerText.trim());window.searchManager.view='kanji'}}>${c}</span>`
+            @click=${e=>{this.searchManager.open(e.target.innerText.trim(), 'kanji')}}>${c}</span>`
         })}
       </div>
       ${this.item.hiragana ? html`<concealable-span class=hiragana .concealed=${live(!this.revealed)}>${this.item.hiragana}</concealable-span>` : nothing}
