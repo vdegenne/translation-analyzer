@@ -2120,7 +2120,7 @@ const Ga=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
       display: flex;
       align-items: center;
       padding-bottom: 116px;
-      overflow: scroll;
+      overflow: auto;
     }
   .paragraph {
     font-size: 3em;
