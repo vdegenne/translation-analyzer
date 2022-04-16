@@ -39,6 +39,7 @@ export class AppContainer extends LitElement {
   // next hidden part
   @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
   @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
+  @query('.paragraph[selected] .source') source!: HTMLDivElement;
 
   @query('search-manager') searchManager!: SearchManager;
 
@@ -49,16 +50,21 @@ export class AppContainer extends LitElement {
   static styles = css`
     :host {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
-  .part[hide] {
-    user-select: none;
-    cursor: pointer;
-  }
+    #translations {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding-bottom: 116px;
+      overflow: scroll;
+    }
   .paragraph {
     font-size: 3em;
+    margin: 0 18px;
   }
   .paragraph:not([selected]) {
     display: none;
@@ -67,6 +73,11 @@ export class AppContainer extends LitElement {
     /* cursor: pointer; */
     font-family: 'Shippori Mincho', serif;
   }
+    .part[hide] {
+      user-select: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
   [hide] {
     background-color: #e0e0e0 !important;
     color: transparent !important;
@@ -74,8 +85,9 @@ export class AppContainer extends LitElement {
 
     header {
       width: 100%;
-      position: absolute;
-      top: 0;
+      /*position: absolute;
+      top: 0;*/
+      
     }
 
     #paragraph-controls {
@@ -84,9 +96,9 @@ export class AppContainer extends LitElement {
       align-content: center;
       justify-content: space-between; */
       width: 100%;
-      position: absolute;
+      position: fixed;
       bottom: 0;
-      padding: 20px;
+      padding: 10px;
       box-sizing: border-box;
     }
   `
@@ -143,10 +155,6 @@ export class AppContainer extends LitElement {
            <div class=source>
              ${paragraph.map(part => html`<span class=part ?hide=${part !== ' '}>${part}</span>`)}
            </div>
-             <div style="text-align: right">
-                 <mwc-icon-button icon=volume_up
-                    @click=${()=>{this.speak()}}></mwc-icon-button>
-             </div>
            <hr style="margin: 0">
            <div class=translated>${translatedParagraph}</div>
          </div>
@@ -158,16 +166,6 @@ export class AppContainer extends LitElement {
 
         
         <div id=paragraph-controls>
-            <mwc-slider
-                    discrete
-                    withTickMarks
-                    step="1"
-                    min="5"
-                    max="50"
-                    value=${this.fontSize}
-                    style="display: block;width:100%"
-                    @input=${e=>{this.fontSize = e.detail.value}}
-            ></mwc-slider>
         ${this.translation && _parts.length > 1 ? html`
             <div style="display: flex;align-items: center;justify-content: space-between;width: 100%">
               <mwc-icon-button icon=arrow_back
@@ -179,6 +177,21 @@ export class AppContainer extends LitElement {
                   @click=${()=>{this.nextPage()}}></mwc-icon-button>
             </div>
         ` : nothing }
+            <div style="display: flex;align-items: center">
+                <mwc-slider
+                        discrete
+                        withTickMarks
+                        step="1"
+                        min="5"
+                        max="50"
+                        value=${this.fontSize}
+                        style="display: block;flex:1"
+                        @input=${e=>{this.fontSize = e.detail.value}}
+                ></mwc-slider>
+                <mwc-icon-button icon=volume_up @click=${()=>{this.speak()}}></mwc-icon-button>
+                <mwc-icon-button icon="remove_red_eye"
+                                 @click=${()=>{this.onRemoveRedEyeClick()}}></mwc-icon-button>
+            </div>
         </div>
 
     <paste-box></paste-box>
@@ -236,7 +249,8 @@ export class AppContainer extends LitElement {
     // play selection or all
     let text = document.getSelection()?.toString()
     if (!text) {
-      text = this.currentSource
+      // text = this.currentSource;
+      text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
     if (this.translation?.lang=='Japanese') {
       // is the selection in the words
@@ -299,5 +313,9 @@ export class AppContainer extends LitElement {
     else {
       this.searchManager.open()
     }
+  }
+
+  private onRemoveRedEyeClick() {
+    this.onParagraphClick()
   }
 }
