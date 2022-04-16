@@ -1,18 +1,22 @@
-import { LitElement, html, css, PropertyValueMap, nothing } from 'lit'
+import {LitElement, html, css, PropertyValueMap, nothing, PropertyValues} from 'lit'
 import { customElement, query, queryAll, state } from 'lit/decorators.js'
 import '@material/mwc-snackbar'
 import '@material/mwc-button'
 import '@material/mwc-icon-button'
+import '@material/mwc-slider'
 // import '@material/mwc-dialog'
 // import '@material/mwc-textfield'
 // import '@material/mwc-checkbox'
 import './search-manager'
+import './speech'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {jlpts, SearchManager} from "./search-manager";
 import { playJapaneseAudio } from './util'
+import {speakEnglish, speakJapanese} from "./speech";
+import {IconButton} from "@material/mwc-icon-button";
 
 declare global {
   interface Window {
@@ -23,19 +27,24 @@ declare global {
 
 @customElement('app-container')
 export class AppContainer extends LitElement {
-  @state() paragraphIndex = 0
-
   @state() translation?: Translation;
+  @state() paragraphIndex = 0
+  @state() fontSize = 24;
 
-  private _parts: string[][] = []
+  // private _parts: string[][] = []
 
   @query('paste-box') pasteBox!: PasteBox;
   @queryAll('.part') parts!: HTMLSpanElement[];
   @queryAll('.paragraph') paragraphs!: HTMLDivElement[];
   // next hidden part
   @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
+  @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
 
   @query('search-manager') searchManager!: SearchManager;
+
+  get currentSource (): string {
+    return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
+  }
 
   static styles = css`
     :host {
@@ -70,13 +79,14 @@ export class AppContainer extends LitElement {
     }
 
     #paragraph-controls {
-      display: flex;
+      /* display: flex;
+      flex-direction: column;
       align-content: center;
-      justify-content: space-between;
+      justify-content: space-between; */
       width: 100%;
       position: absolute;
       bottom: 0;
-      padding: 24px;
+      padding: 20px;
       box-sizing: border-box;
     }
   `
@@ -102,6 +112,11 @@ export class AppContainer extends LitElement {
     }
 
     return html`
+        <style>
+            .paragraph {
+                font-size: ${this.fontSize}px !important;
+            }
+        </style>
     <header style="display:flex;align-items:center;justify-content:space-between">
       <div style="flex: 1"></div>
         <mwc-icon-button icon="search"
@@ -117,7 +132,7 @@ export class AppContainer extends LitElement {
         </mwc-icon-button>
     </header>
 
-    <div id=paragraphs>
+    <div id=translations>
       ${this.translation ? html`
        <!-- for each paragraph -->
        ${_parts.map((paragraph, i)=>{
@@ -128,8 +143,12 @@ export class AppContainer extends LitElement {
            <div class=source>
              ${paragraph.map(part => html`<span class=part ?hide=${part !== ' '}>${part}</span>`)}
            </div>
-           <hr>
-           <div>${translatedParagraph}</div>
+             <div style="text-align: right">
+                 <mwc-icon-button icon=volume_up
+                    @click=${()=>{this.speak()}}></mwc-icon-button>
+             </div>
+           <hr style="margin: 0">
+           <div class=translated>${translatedParagraph}</div>
          </div>
        `
        })}
@@ -137,22 +156,40 @@ export class AppContainer extends LitElement {
       }
     </div>
 
-    ${this.translation && _parts.length > 1 ? html`
-    <div id=paragraph-controls style="display:flex;align-items:center;justify-content:space-between;width:100%">
-      <mwc-icon-button icon=arrow_back
-        ?disabled=${this.paragraphIndex === 0}
-        @click=${()=>{this.previousPage()}}></mwc-icon-button>
-      <div>${this.paragraphIndex + 1}</div>
-      <mwc-icon-button icon=arrow_forward
-        ?disabled=${this.paragraphIndex === _parts.length - 1}
-        @click=${()=>{this.nextPage()}}></mwc-icon-button>
-    </div>
-    ` : nothing }
+        
+        <div id=paragraph-controls>
+            <mwc-slider
+                    discrete
+                    withTickMarks
+                    step="1"
+                    min="5"
+                    max="50"
+                    value=${this.fontSize}
+                    style="display: block;width:100%"
+                    @input=${e=>{this.fontSize = e.detail.value}}
+            ></mwc-slider>
+        ${this.translation && _parts.length > 1 ? html`
+            <div style="display: flex;align-items: center;justify-content: space-between;width: 100%">
+              <mwc-icon-button icon=arrow_back
+                  ?disabled=${this.paragraphIndex === 0}
+                  @click=${()=>{this.previousPage()}}></mwc-icon-button>
+                <div>${this.paragraphIndex + 1}</div>
+                <mwc-icon-button icon=arrow_forward
+                  ?disabled=${this.paragraphIndex === _parts.length - 1}
+                  @click=${()=>{this.nextPage()}}></mwc-icon-button>
+            </div>
+        ` : nothing }
+        </div>
 
     <paste-box></paste-box>
 
     <search-manager></search-manager>
     `
+  }
+
+  protected updated(_changedProperties: PropertyValues) {
+    this.shadowRoot!.querySelector('mwc-slider')!.layout()
+    super.updated(_changedProperties);
   }
 
   protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
@@ -166,16 +203,7 @@ export class AppContainer extends LitElement {
 
     window.addEventListener('keypress', e=>{
       if (e.key=='s') {
-        const selection = document.getSelection()?.toString()
-        if (selection) {
-          // is the selection in the words
-          const result = this.searchManager.searchData(selection).filter(s=>s.type=='words' && s.exactSearch)
-          if (result.length) {
-            const content = result[0].hiragana || result[0].word
-            playJapaneseAudio(content)
-          }
-          // @TODO else we play synthetic voice
-        }
+        this.speak()
       }
       if (e.key=='1') {
         const selection = document.getSelection()?.toString()
@@ -204,6 +232,24 @@ export class AppContainer extends LitElement {
     }
   }
 
+  speak () {
+    // play selection or all
+    let text = document.getSelection()?.toString()
+    if (!text) {
+      text = this.currentSource
+    }
+    if (this.translation?.lang=='Japanese') {
+      // is the selection in the words
+      const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
+      if (result.length) {
+        playJapaneseAudio(result[0].hiragana || result[0].word)
+      }
+      else {
+        speakJapanese(text)
+      }
+    }
+  }
+
   async load (translation: Translation) {
     if (this.translation && this.translation.lang == translation.lang && this.translation.source == translation.source && this.translation.translated == translation.translated) {
       return
@@ -213,18 +259,18 @@ export class AppContainer extends LitElement {
     await this.updateComplete
     this.parts.forEach(el=>{if(el.innerText!==' ') {el.setAttribute('hide', '')}})
     return
-    let paragraphs = translation.source.split('\n').filter(p=>p) // the filter removes empty lines
-    switch (translation.lang) {
-      case 'French':
-        // break the paragraphs into words
-        this._parts = paragraphs.map(p=>p.replace(/\ /g, ' <space> ').split(' ').map(w=>(w == '<space>')?' ':w))
-        break
-
-      case 'Japanese':
-        // break the paragraphs into character (letter)
-        this._parts = paragraphs.map(p=>p.split(''))
-        break
-    }
+    // let paragraphs = translation.source.split('\n').filter(p=>p) // the filter removes empty lines
+    // switch (translation.lang) {
+    //   case 'French':
+    //     // break the paragraphs into words
+    //     this._parts = paragraphs.map(p=>p.replace(/\ /g, ' <space> ').split(' ').map(w=>(w == '<space>')?' ':w))
+    //     break
+    //
+    //   case 'Japanese':
+    //     // break the paragraphs into character (letter)
+    //     this._parts = paragraphs.map(p=>p.split(''))
+    //     break
+    // }
   }
 
   public async fetchTranslations (word: string) {
