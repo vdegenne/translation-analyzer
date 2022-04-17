@@ -17,6 +17,7 @@ import {jlpts, SearchManager} from "./search-manager";
 import { playJapaneseAudio } from './util'
 import {speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
+import {isFullJapanese} from "asian-regexps";
 
 declare global {
   interface Window {
@@ -225,6 +226,10 @@ export class AppContainer extends LitElement {
           this.searchManager.open(selection, 'words')
         }
       }
+
+      if (e.key=='Space') {
+        this.onRemoveRedEyeClick()
+      }
     })
   }
 
@@ -246,18 +251,22 @@ export class AppContainer extends LitElement {
     }
   }
 
-  speak () {
+  async speak () {
     // play selection or all
     let text = document.getSelection()?.toString()
     if (!text) {
       // text = this.currentSource;
       text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
-    if (this.translation?.lang=='Japanese') {
+    if (isFullJapanese(this.translation!.lang)) {
       // is the selection in the words
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
       if (result.length) {
-        playJapaneseAudio(result[0].hiragana || result[0].word)
+        try {
+          await playJapaneseAudio(result[0].hiragana || result[0].word)
+        } catch (e) {
+          speakJapanese(result[0].hiragana || result[0].word)
+        }
       }
       else {
         speakJapanese(text)

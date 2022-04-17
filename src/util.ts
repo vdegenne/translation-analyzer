@@ -33,9 +33,13 @@ export function googleImageSearch (word) {
 // }
 
 
-export function playJapaneseAudio (word) {
-  const audio = new Audio(`https://assiets.vdegenne.com/data/japanese/audio/${encodeURIComponent(word)}`)
-  audio.play()
+export async function playJapaneseAudio (word) {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio(`https://assiets.vdegenne.com/data/japanese/audio/${encodeURIComponent(word)}`)
+    audio.onerror = reject
+    audio.onended = resolve
+    audio.play()
+  })
 }
 
 
