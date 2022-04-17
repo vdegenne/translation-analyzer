@@ -117,6 +117,7 @@ export class AppContainer extends LitElement {
           break
 
         case 'Japanese':
+        case 'Korean':
           // break the paragraphs into character (letter)
           _parts = paragraphs.map(p=>p.split(''))
           break
@@ -288,19 +289,45 @@ export class AppContainer extends LitElement {
   }
 
   public async fetchTranslations (word: string) {
-    const response = await fetch(`https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(word)}`)
+    let url;
+    switch (this.pasteBox.translation.lang) {
+      case "Japanese":
+        url = `https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(word)}`
+        break
+      case "Korean":
+        url = `https://assiets.vdegenne.com/korean/examples/from/japanese/${encodeURIComponent(word)}`
+        break
+      default:
+        return
+    }
 
+    const response = await fetch(url)
     const translations = await response.json()
+
     if (translations.length === 0) {
       window.toast('no results')
       return
     }
 
-    this.pasteBox.load({
-      lang: 'Japanese',
-      source: translations.map(t=>t.j).join('\n'),
-      translated: translations.map(t=>t.e).join('\n')
-    })
+    let translation: Translation
+    switch (this.pasteBox.translation.lang) {
+      case "Japanese":
+        translation = {
+          lang: 'Japanese',
+          source : translations.map(t=>t.j).join('\n'),
+          translated : translations.map(t=>t.e).join('\n')
+        }
+        break
+      case "Korean":
+        translation = {
+          lang: 'Korean',
+          source : translations.map(t=>t.k).join('\n'),
+          translated : translations.map(t=>t.j).join('\n')
+        }
+        break
+    }
+
+    this.pasteBox.load(translation)
     this.pasteBox.submit()
     this.searchManager.close()
   }
