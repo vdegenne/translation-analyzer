@@ -227,7 +227,7 @@ export class AppContainer extends LitElement {
         }
       }
 
-      if (e.key=='Space') {
+      if (e.key==' ') {
         this.onRemoveRedEyeClick()
       }
     })
