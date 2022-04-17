@@ -112,8 +112,8 @@ export class SearchManager extends LitElement {
       this.requestUpdate()
     })
 
-    this.addEventListener('keydown', e=>{
-      // e.stopImmediatePropagation()
+    this.addEventListener('keypress', e=>{
+      e.stopImmediatePropagation()
       e.stopPropagation()
       // e.preventDefault()
       e.cancelBubble  = true
