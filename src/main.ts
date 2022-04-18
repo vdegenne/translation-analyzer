@@ -258,6 +258,7 @@ export class AppContainer extends LitElement {
       // text = this.currentSource;
       text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
+    console.log(text)
     if (isFullJapanese(text)) {
       // is the selection in the words
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
