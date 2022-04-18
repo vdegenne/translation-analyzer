@@ -43,7 +43,7 @@ export function speakEnglish (text: string, volume = .5, rate = .7) {
   speak(candidates[0], text, volume, rate)
 }
 
-export function speakJapanese (text: string, volume = .5, rate = .9) {
+export function speakJapanese (text: string, volume = 1, rate = .9) {
   const candidates = getCandidates(['ja-JP', 'ja_JP'], [
     // pc
     'Google 日本語',
