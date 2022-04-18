@@ -1,6 +1,6 @@
 import {css, html, LitElement, PropertyValues} from "lit";
 import {customElement, query, state} from "lit/decorators.js";
-import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio} from "./util";
+import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba} from "./util";
 import {Menu} from "@material/mwc-menu";
 
 @customElement('context-menu')
@@ -27,19 +27,19 @@ export class ContextMenu extends LitElement {
               <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
           </mwc-list-item>
           <!-- jisho -->
-          <mwc-list-item id="jisho" graphic=icon>
+          <mwc-list-item id="jisho" graphic=icon @click=${()=>{jisho(this.value)}}>
               <span>Jisho</span>
-              <img src="./img/jisho.ico" slot="graphic" @click=${()=>{jisho(this.value)}}>
+              <img src="./img/jisho.ico" slot="graphic">
           </mwc-list-item>
-          <mwc-list-item id="mdbg" graphic=icon>
+          <mwc-list-item id="mdbg" graphic=icon @click=${()=>{mdbg(this.value)}}>
               <span>MDBG</span>
-              <img src="./img/mdbg.ico" slot="graphic" @click=${()=>{mdbg(this.value)}}>
+              <img src="./img/mdbg.ico" slot="graphic">
           </mwc-list-item>
-          <mwc-list-item id="naver" graphic=icon>
+          <mwc-list-item id="naver" graphic=icon @click=${()=>{naver(this.value)}}>
               <span>Naver</span>
-              <img src="./img/naver.ico" slot="graphic" @click=${()=>{naver(this.value)}}>
+              <img src="./img/naver.ico" slot="graphic">
           </mwc-list-item>
-          <mwc-list-item id="tatoeba" graphic=icon>
+          <mwc-list-item id="tatoeba" graphic=icon @click=${()=>{tatoeba(this.value)}}>
               <span>Tatoeba</span>
               <img src="./img/tatoeba.ico" slot="graphic">
           </mwc-list-item>
