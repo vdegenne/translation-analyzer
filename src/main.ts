@@ -9,15 +9,17 @@ import '@material/mwc-slider'
 // import '@material/mwc-checkbox'
 import './search-manager'
 import './speech'
+import './context-menu'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {jlpts, SearchManager} from "./search-manager";
 import { playJapaneseAudio } from './util'
-import {speakEnglish, speakJapanese} from "./speech";
+import {speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
+import { ContextMenu } from './context-menu'
 
 declare global {
   interface Window {
@@ -30,7 +32,7 @@ declare global {
 export class AppContainer extends LitElement {
   @state() translation?: Translation;
   @state() paragraphIndex = 0
-  @state() fontSize = 24;
+  @state() fontSize = 42;
 
   // private _parts: string[][] = []
 
@@ -43,6 +45,7 @@ export class AppContainer extends LitElement {
   @query('.paragraph[selected] .source') source!: HTMLDivElement;
 
   @query('search-manager') searchManager!: SearchManager;
+  @query('context-menu') contextMenu!: ContextMenu;
 
   get currentSource (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
@@ -77,7 +80,7 @@ export class AppContainer extends LitElement {
     .part[hide] {
       user-select: none;
       cursor: pointer;
-      border-radius: 3px;
+      /* border-radius: 3px; */
     }
   [hide] {
     background-color: #e0e0e0 !important;
@@ -103,6 +106,10 @@ export class AppContainer extends LitElement {
       box-sizing: border-box;
     }
   `
+
+  get selection () {
+    return document.getSelection()?.toString()
+  }
 
   render () {
     // console.log('rendered')
@@ -133,11 +140,11 @@ export class AppContainer extends LitElement {
         </style>
     <header style="display:flex;align-items:center;justify-content:space-between">
       <div style="flex: 1"></div>
-        <mwc-icon-button icon="search"
+        <!-- <mwc-icon-button icon="search"
                          @click=${() => {
-                             this.onSearchButtonClick()
+                             this.openSearchManager()
                          }}>
-        </mwc-icon-button>
+        </mwc-icon-button> -->
       <mwc-icon-button icon=settings
                        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
         <mwc-icon-button
@@ -185,12 +192,22 @@ export class AppContainer extends LitElement {
                         withTickMarks
                         step="1"
                         min="5"
-                        max="50"
+                        max="80"
                         value=${this.fontSize}
                         style="display: block;flex:1"
                         @input=${e=>{this.fontSize = e.detail.value}}
                 ></mwc-slider>
-                <mwc-icon-button icon=volume_up @click=${()=>{this.speak()}}></mwc-icon-button>
+                <mwc-icon-button icon=search
+                    @click=${(e)=>{
+                     if (this.selection) {
+                       this.contextMenu.moveMenuTo(e.x, e.y)
+                         this.contextMenu.open(this.selection)
+                     }
+                     else {
+                       this.openSearchManager()
+                     }
+                    }}></mwc-icon-button>
+                <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakerIconButtonClick()}}></mwc-icon-button>
                 <mwc-icon-button icon="remove_red_eye"
                                  @click=${()=>{this.onRemoveRedEyeClick()}}></mwc-icon-button>
             </div>
@@ -199,6 +216,8 @@ export class AppContainer extends LitElement {
     <paste-box></paste-box>
 
     <search-manager></search-manager>
+        
+        <context-menu></context-menu>
     `
   }
 
@@ -218,7 +237,7 @@ export class AppContainer extends LitElement {
 
     window.addEventListener('keypress', e=>{
       if (e.key=='s') {
-        this.speak()
+        this.onSpeakerIconButtonClick()
       }
       if (e.key=='1') {
         const selection = document.getSelection()?.toString()
@@ -231,6 +250,23 @@ export class AppContainer extends LitElement {
         this.onRemoveRedEyeClick()
       }
     })
+
+    window.addEventListener('contextmenu', e=>{
+      if (e.button==2)
+        e.preventDefault()
+    })
+    window.addEventListener('pointerdown', (e) => {
+      if (e.button==2) {
+        if (this.selection || this.contextMenu.value) {
+          this.contextMenu.moveMenuTo(e.x, e.y)
+          this.contextMenu.open(this.selection)
+        }
+      }
+    })
+
+    // setInterval(()=>{
+    //   ;(this.shadowRoot!.querySelector('[icon=search]') as IconButton).disabled = !this.selection
+    // },700)
   }
 
   previousPage () {
@@ -251,26 +287,31 @@ export class AppContainer extends LitElement {
     }
   }
 
-  async speak () {
+  onSpeakerIconButtonClick () {
     // play selection or all
-    let text = document.getSelection()?.toString()
+    let text = this.selection
     if (!text) {
       // text = this.currentSource;
       text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
+
+    this.speak(text)
+  }
+
+  async speak (text:string) {
     if (isFullJapanese(text)) {
       // is the selection in the words
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
-      if (result.length) {
+      // if (result.length) {
         try {
-          await playJapaneseAudio(result[0].hiragana || result[0].word)
+          await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
         } catch (e) {
-          speakJapanese(result[0].hiragana || result[0].word)
+          speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
         }
-      }
-      else {
-        speakJapanese(text)
-      }
+      // }
+      // else {
+      //   speakJapanese(text)
+      // }
     }
   }
 
@@ -341,7 +382,7 @@ export class AppContainer extends LitElement {
     this.searchManager.close()
   }
 
-  private onSearchButtonClick() {
+  private openSearchManager() {
     const selection = document.getSelection()!.toString()
     if (selection) {
       this.searchManager.open(selection, 'words')
