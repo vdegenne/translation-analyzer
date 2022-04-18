@@ -1895,6 +1895,10 @@ const Ra=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
               <span>Listen</span>
               <mwc-icon slot=graphic>volume_up</mwc-icon>
           </mwc-list-item>
+          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.open(this.value)}}>
+              <span>search</span>
+              <mwc-icon slot=graphic>search</mwc-icon>
+          </mwc-list-item>
       </mwc-menu>
     `}firstUpdated(e){this.menu.anchor=this,super.firstUpdated(e),this.addEventListener("click",(e=>{this.menu.show()}))}moveMenuTo(e,t){this.style.left=`${e}px`,this.style.top=`${t}px`}open(e){e&&(this.value=e),this.menu.show()}};Ba.styles=re`
     :host {
