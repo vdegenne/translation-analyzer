@@ -17,6 +17,7 @@ export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, r
   return new Promise((resolve, reject) => {
     const utterance = new SpeechSynthesisUtterance();
     Object.assign(utterance, { voice, text, volume, rate })
+    utterance.lang = voice.lang.replace(/_/, '-')
     utterance.onend = () => {
       resolve(null)
     }
