@@ -1865,7 +1865,7 @@ const Ra=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
       <mwc-menu fixed quick>
           <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'">
               <span>${this.value}</span>
-              ${e&&e[1]?L`<br><span>${e[1]}</span>`:N}
+              ${e&&e[1]?L`<br><span>${e[0]==this.value?e[1]:this.value}</span>`:N}
           </mwc-list-item>
           <li divider role="separator"></li>
           <!-- google images -->
