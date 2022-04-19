@@ -49,7 +49,7 @@ export class ContextMenu extends LitElement {
               <span>Listen</span>
               <mwc-icon slot=graphic>volume_up</mwc-icon>
           </mwc-list-item>
-          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.open(this.value)}}>
+          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.show(this.value)}}>
               <span>search</span>
               <mwc-icon slot=graphic>search</mwc-icon>
           </mwc-list-item>

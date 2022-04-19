@@ -396,7 +396,7 @@ export class SearchManager extends LitElement {
     // }
   }
 
-  open(query?: string, view?: ViewType) {
+  show(query?: string, view?: ViewType) {
     if (query) {
       this.search(query)
     }
@@ -404,6 +404,10 @@ export class SearchManager extends LitElement {
       this.view = view
     }
     this.dialog.show()
+  }
+
+  get open () {
+    return this.dialog.open
   }
 
   close () {
@@ -422,7 +426,7 @@ export class SearchManager extends LitElement {
     // const jlpt = 5 - e.detail.index
     const candidates = jlpts[e.detail.index]
     const random = candidates[~~(Math.random()*candidates.length)]
-    this.open(random[0], 'words')
+    this.show(random[0], 'words')
   }
 }
 

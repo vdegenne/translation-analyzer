@@ -54,7 +54,7 @@ export class SearchItemElement extends LitElement {
     -->
     <div id=anchor>
       <!-- MENU -->
-      <mwc-menu fixed>
+      <mwc-menu quick fixed>
         <mwc-list-item noninteractive>
           <span style="font-family:'Sawarabi Mincho'">${this.item.word}</span>
         </mwc-list-item>
@@ -104,7 +104,7 @@ export class SearchItemElement extends LitElement {
           const kanjiData = getKanjiData(c)
           return html`<span class="character"
             title="${kanjiData ? `(jlpt${kanjiData[2]}) ${kanjiData[3]}//${kanjiData[4]}` : ''}"
-            @click=${e=>{this.searchManager.open(e.target.innerText.trim(), 'kanji')}}>${c}</span>`
+            @click=${e=>{this.searchManager.show(e.target.innerText.trim(), 'kanji')}}>${c}</span>`
         })}
       </div>
       ${this.item.hiragana ? html`<concealable-span class=hiragana .concealed=${live(!this.revealed)}>${this.item.hiragana}</concealable-span>` : nothing}
@@ -145,8 +145,12 @@ export class SearchItemElement extends LitElement {
     })
 
 
-    this.addEventListener('keypress', (e)=>{
+    window.addEventListener('keypress', (e)=>{
       if (this.menu.open) {
+        // e.cancelBubble = true
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        // e.preventDefault()
         if (e.key == 'a') {
           this.googleImagesListItem.click()
         }

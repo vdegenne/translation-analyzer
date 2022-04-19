@@ -226,8 +226,8 @@ export class AppContainer extends LitElement {
     super.updated(_changedProperties);
   }
 
-  protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-    this.addEventListener('upload', e=>this.load((e as CustomEvent).detail.translation))
+  protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
     this.addEventListener('click', (e) => {
       const target = e.composedPath()[0] as HTMLElement
       if (target.classList.contains('part') && target.hasAttribute('hide')) {
@@ -235,28 +235,29 @@ export class AppContainer extends LitElement {
       }
     })
 
-    window.addEventListener('keypress', e=>{
-      if (e.key=='s') {
+    window.addEventListener('keypress', e => {
+      if (this.searchManager.open) { return }
+      if (e.key == 's') {
         this.onSpeakerIconButtonClick()
       }
-      if (e.key=='1') {
+      if (e.key == '1') {
         const selection = document.getSelection()?.toString()
         if (selection) {
-          this.searchManager.open(selection, 'words')
+          this.searchManager.show(selection, 'words')
         }
       }
 
-      if (e.key==' ') {
+      if (e.key == ' ') {
         this.onRemoveRedEyeClick()
       }
-    })
+    }, true)
 
-    window.addEventListener('contextmenu', e=>{
-      if (e.button==2)
+    window.addEventListener('contextmenu', e => {
+      if (e.button == 2)
         e.preventDefault()
     })
     window.addEventListener('pointerdown', (e) => {
-      if (e.button==2) {
+      if (e.button == 2) {
         if (this.selection || this.contextMenu.value) {
           this.contextMenu.moveMenuTo(e.x, e.y)
           this.contextMenu.open(this.selection)
@@ -267,6 +268,10 @@ export class AppContainer extends LitElement {
     // setInterval(()=>{
     //   ;(this.shadowRoot!.querySelector('[icon=search]') as IconButton).disabled = !this.selection
     // },700)
+    this.pasteBox.loadFromRemote().then(() => {
+      this.pasteBox.submit()
+    })
+
   }
 
   previousPage () {
@@ -385,10 +390,10 @@ export class AppContainer extends LitElement {
   private openSearchManager() {
     const selection = document.getSelection()!.toString()
     if (selection) {
-      this.searchManager.open(selection, 'words')
+      this.searchManager.show(selection, 'words')
     }
     else {
-      this.searchManager.open()
+      this.searchManager.show()
     }
   }
 
