@@ -14,7 +14,7 @@ import './context-menu'
 import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
-import {jlpts, SearchManager} from "./search-manager";
+import {getRandomWord, SearchManager} from "./search-manager";
 import {googleImageSearch, playJapaneseAudio} from './util'
 import {speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
@@ -145,6 +145,8 @@ export class AppContainer extends LitElement {
                              this.openSearchManager()
                          }}>
         </mwc-icon-button> -->
+        <mwc-icon-button icon="casino"
+            @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
       <mwc-icon-button icon=settings
                        @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
         <mwc-icon-button
@@ -201,7 +203,7 @@ export class AppContainer extends LitElement {
                     @click=${(e)=>{
                      if (this.selection) {
                        this.contextMenu.moveMenuTo(e.x, e.y)
-                         this.contextMenu.open(this.selection)
+                         this.contextMenu.show(this.selection)
                      }
                      else {
                        this.openSearchManager()
@@ -228,7 +230,7 @@ export class AppContainer extends LitElement {
 
   protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): Promise<void> {
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
-    this.addEventListener('click', (e) => {
+    this.addEventListener('pointerdown', (e) => {
       const target = e.composedPath()[0] as HTMLElement
 
       // if we've clicked on a part
@@ -278,7 +280,7 @@ export class AppContainer extends LitElement {
       if (e.button == 2) {
         if (this.selection || this.contextMenu.value) {
           this.contextMenu.moveMenuTo(e.x, e.y)
-          this.contextMenu.open(this.selection)
+          this.contextMenu.show(this.selection)
         }
       }
     })
@@ -417,5 +419,11 @@ export class AppContainer extends LitElement {
 
   private onRemoveRedEyeClick() {
     this.onParagraphClick()
+  }
+
+  private onCasinoButtonClick() {
+    // pick a random word
+    const word=getRandomWord([5])
+    this.fetchTranslations(word[0])
   }
 }

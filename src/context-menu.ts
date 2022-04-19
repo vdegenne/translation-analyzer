@@ -1,7 +1,9 @@
-import {css, html, LitElement, PropertyValues} from "lit";
+import {css, html, LitElement, nothing, PropertyValues} from "lit";
 import {customElement, query, state} from "lit/decorators.js";
 import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba} from "./util";
 import {Menu} from "@material/mwc-menu";
+import {getExactSearch, getRandomWord} from "./search-manager";
+import {JlptWordEntry} from "./types";
 
 @customElement('context-menu')
 export class ContextMenu extends LitElement {
@@ -15,10 +17,18 @@ export class ContextMenu extends LitElement {
     }
   `
   protected render(): unknown {
+    let exactSearch: JlptWordEntry|undefined = undefined
+    if (this.value) {
+      exactSearch = getExactSearch(this.value)
+    }
+
     return html`
       <mwc-menu fixed quick>
-          <mwc-list-item noninteractive>
-              <span style="font-family:'Sawarabi Mincho'">${this.value}</span>
+          <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'">
+              <span>${this.value}</span>
+              ${exactSearch && exactSearch[1]
+                      ? html`<br><span>${exactSearch[1]}</span>` 
+                      : nothing }
           </mwc-list-item>
           <li divider role="separator"></li>
           <!-- google images -->
@@ -49,9 +59,10 @@ export class ContextMenu extends LitElement {
               <span>Listen</span>
               <mwc-icon slot=graphic>volume_up</mwc-icon>
           </mwc-list-item>
-          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.show(this.value)}}>
+          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.show(this.value)}}
+                style="color:${exactSearch ? '#2196f3' : 'initial'}">
               <span>search</span>
-              <mwc-icon slot=graphic>search</mwc-icon>
+              <mwc-icon slot=graphic style="color: inherit">search</mwc-icon>
           </mwc-list-item>
       </mwc-menu>
     `
@@ -72,7 +83,7 @@ export class ContextMenu extends LitElement {
     this.style.top = `${y}px`
   }
 
-  open(label?: string) {
+  show(label?: string) {
     if (label)
       this.value=label
     this.menu.show()

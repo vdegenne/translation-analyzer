@@ -424,19 +424,35 @@ export class SearchManager extends LitElement {
 
   private onMenuListItemAction(e) {
     // const jlpt = 5 - e.detail.index
-    const candidates = jlpts[e.detail.index]
-    const random = candidates[~~(Math.random()*candidates.length)]
-    this.show(random[0], 'words')
+    // const candidates = jlpts[e.detail.index]
+    // const random = candidates[~~(Math.random()*candidates.length)]
+    // this.show(random[0], 'words')
+    this.show(getRandomWord([5 - e.detail.index])[0])
   }
 }
 
+export function getRandomWord (jlptsArray = [5, 4, 3, 2, 1]) {
+  const allWords = jlptsArray.map(jlpt => jlpts[5 - jlpt]).flat()
+  return allWords[~~(Math.random()*allWords.length)]
+}
 
-export function firstWordFoundFromCharacter (character: string) {
-  for (const jlpt of jlpts) {
-    const result = jlpt.find(w=>w[0].includes(character))
-    if (result) {
-      return result
+export function getExactSearch (word: string) {
+  for (const wordEntry of jlpts.flat()) {
+    if (wordEntry[0]==word || wordEntry[1]==word) {
+      return wordEntry
     }
   }
-  return null
 }
+export function wordExists(word: string) {
+  return getExactSearch(word) !== undefined
+}
+
+// export function firstWordFoundFromCharacter (character: string) {
+//   for (const jlpt of jlpts) {
+//     const result = jlpt.find(w=>w[0].includes(character))
+//     if (result) {
+//       return result
+//     }
+//   }
+//   return null
+// }
