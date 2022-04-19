@@ -230,7 +230,14 @@ export class AppContainer extends LitElement {
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
     this.addEventListener('click', (e) => {
       const target = e.composedPath()[0] as HTMLElement
+
+      // if we've clicked on a part
       if (target.classList.contains('part') && target.hasAttribute('hide')) {
+        this.onParagraphClick()
+      }
+
+      // if we've click in the back
+      if (['app', 'translations'].includes(target.id)) {
         this.onParagraphClick()
       }
     })
