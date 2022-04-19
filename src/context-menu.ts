@@ -88,4 +88,8 @@ export class ContextMenu extends LitElement {
       this.value=label
     this.menu.show()
   }
+
+  get open () {
+    return this.menu.open
+  }
 }
