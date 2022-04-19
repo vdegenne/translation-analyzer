@@ -15,7 +15,7 @@ import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {jlpts, SearchManager} from "./search-manager";
-import { playJapaneseAudio } from './util'
+import {googleImageSearch, playJapaneseAudio} from './util'
 import {speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
@@ -226,7 +226,7 @@ export class AppContainer extends LitElement {
     super.updated(_changedProperties);
   }
 
-  protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+  protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): Promise<void> {
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
     this.addEventListener('click', (e) => {
       const target = e.composedPath()[0] as HTMLElement
@@ -235,22 +235,33 @@ export class AppContainer extends LitElement {
       }
     })
 
-    window.addEventListener('keypress', e => {
+    window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
-      if (e.key == 's') {
+      if (e.code == 'KeyS') {
         this.onSpeakerIconButtonClick()
       }
-      if (e.key == '1') {
-        const selection = document.getSelection()?.toString()
+      if (e.code == 'Digit1') {
+        const selection = this.selection
         if (selection) {
           this.searchManager.show(selection, 'words')
         }
       }
+      if (e.code=='KeyA') {
+        if (this.selection)
+          googleImageSearch(this.selection)
+      }
 
-      if (e.key == ' ') {
+      if (e.code == 'Space') {
         this.onRemoveRedEyeClick()
       }
-    }, true)
+
+      if (e.code=='ArrowLeft') {
+        ;(this.shadowRoot!.querySelector('[icon=arrow_back]') as IconButton).click()
+      }
+      if (e.code=='ArrowRight') {
+        ;(this.shadowRoot!.querySelector('[icon=arrow_forward]') as IconButton).click()
+      }
+    })
 
     window.addEventListener('contextmenu', e => {
       if (e.button == 2)

@@ -54,7 +54,7 @@ export class SearchItemElement extends LitElement {
     -->
     <div id=anchor>
       <!-- MENU -->
-      <mwc-menu quick fixed>
+      <mwc-menu quick fixed @click=${(e)=>{this.menu.show()}}>
         <mwc-list-item noninteractive>
           <span style="font-family:'Sawarabi Mincho'">${this.item.word}</span>
         </mwc-list-item>
