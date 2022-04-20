@@ -16,7 +16,7 @@ import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {getRandomWord, SearchManager} from "./search-manager";
 import {googleImageSearch, playJapaneseAudio} from './util'
-import {speak, speakEnglish, speakJapanese} from "./speech";
+import {cancelSpeech, speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
 import { ContextMenu } from './context-menu'
@@ -352,6 +352,7 @@ export class AppContainer extends LitElement {
             await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
           }
         } catch (e) {
+          cancelSpeech() // cancel in case a speech is alredy playing
           speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
         }
       // }

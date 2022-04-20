@@ -3,6 +3,8 @@ const spchsys = speechSynthesis
 /* available voices */
 let voices: SpeechSynthesisVoice[] = [];
 
+let _utterance: SpeechSynthesisUtterance|undefined = undefined;
+
 function getCandidates (langs: string[], preferredNames: string[]) {
   const candidates = spchsys.getVoices().filter(v=>langs.includes(v.lang))
   candidates.sort((v1, v2) => {
@@ -24,6 +26,7 @@ export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, r
     // utterance.voice = voice
     // utterance.text = text
     spchsys.speak(utterance)
+    _utterance = utterance
   })
 }
 
@@ -68,3 +71,8 @@ window.speechSynthesis.addEventListener('voiceschanged', ()=> {
 // Maybe because it tells the device that the application is trying to use the speechSynthesis module
 // do not know.
 speechSynthesis.getVoices()
+
+
+export async function cancelSpeech () {
+  spchsys.cancel()
+}
