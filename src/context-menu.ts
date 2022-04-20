@@ -27,7 +27,7 @@ export class ContextMenu extends LitElement {
           <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'">
               <span>${this.value}</span>
               ${exactSearch && exactSearch[1]
-                      ? html`<br><span>${exactSearch[0] == this.value ? exactSearch[1] : this.value}</span>` 
+                      ? html`<br><span>${exactSearch[0] == this.value ? exactSearch[1] : exactSearch[0]}</span>` 
                       : nothing }
           </mwc-list-item>
           <li divider role="separator"></li>

@@ -1,4 +1,4 @@
-import {LitElement, html, css, PropertyValueMap, nothing, PropertyValues} from 'lit'
+import {LitElement, html, css, PropertyValueMap, nothing, PropertyValues, render} from 'lit'
 import { customElement, query, queryAll, state } from 'lit/decorators.js'
 import '@material/mwc-snackbar'
 import '@material/mwc-button'
@@ -43,6 +43,7 @@ export class AppContainer extends LitElement {
   @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
   @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
   @query('.paragraph[selected] .source') source!: HTMLDivElement;
+  @query('#feedback') feedbackBox!: HTMLDivElement;
 
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
@@ -139,7 +140,7 @@ export class AppContainer extends LitElement {
             }
         </style>
     <header style="display:flex;align-items:center;justify-content:space-between">
-      <div style="flex: 1"></div>
+      <div id=feedback style="flex: 1"></div>
         <!-- <mwc-icon-button icon="search"
                          @click=${() => {
                              this.openSearchManager()
@@ -229,8 +230,10 @@ export class AppContainer extends LitElement {
   }
 
   protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): Promise<void> {
+    let mouseHold = false
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
     this.addEventListener('pointerdown', (e) => {
+      mouseHold = true
       const target = e.composedPath()[0] as HTMLElement
 
       // if we've clicked on a part
@@ -243,6 +246,7 @@ export class AppContainer extends LitElement {
         this.onParagraphClick()
       }
     })
+    this.addEventListener('pointerup', e=>mouseHold=false)
 
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
@@ -292,6 +296,24 @@ export class AppContainer extends LitElement {
       this.pasteBox.submit()
     })
 
+
+    /******************
+     * interval that seeks for selection change
+     *******************************************/
+    let selection
+    setInterval(()=>{
+      const documentSelection = this.selection
+      if (!mouseHold && documentSelection && documentSelection.length != 1 && documentSelection != selection) {
+        const searchResult = this.searchManager.searchData(documentSelection, ['words']).filter(i=>i.dictionary!='not found')
+        if (searchResult.length) {
+          render(
+            html`${searchResult[0].word} ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : nothing}`,
+            this.feedbackBox
+          )
+        }
+        selection = documentSelection
+      }
+    }, 1200)
   }
 
   previousPage () {
@@ -419,6 +441,7 @@ export class AppContainer extends LitElement {
 
   private onRemoveRedEyeClick() {
     this.onParagraphClick()
+    this.onSpeakerIconButtonClick()
   }
 
   private onCasinoButtonClick() {
