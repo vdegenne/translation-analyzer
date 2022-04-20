@@ -243,7 +243,8 @@ export class AppContainer extends LitElement {
 
       // if we've click in the back
       if (e.button==0 && ['app', 'translations'].includes(target.id) && !this.selection && !this.contextMenu.open) {
-        this.onParagraphClick()
+        this.onRemoveRedEyeClick()
+        // this.onParagraphClick()
       }
     })
     this.addEventListener('mouseup', e=>mouseHold=false)
@@ -275,7 +276,6 @@ export class AppContainer extends LitElement {
         ;(this.shadowRoot!.querySelector('[icon=arrow_forward]') as IconButton).click()
       }
     })
-
     window.addEventListener('contextmenu', e => {
       if (e.button == 2)
         e.preventDefault()
@@ -289,9 +289,6 @@ export class AppContainer extends LitElement {
       }
     })
 
-    // setInterval(()=>{
-    //   ;(this.shadowRoot!.querySelector('[icon=search]') as IconButton).disabled = !this.selection
-    // },700)
     this.pasteBox.loadFromRemote().then(() => {
       this.pasteBox.submit()
     })
