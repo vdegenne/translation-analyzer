@@ -190,6 +190,18 @@ export class AppContainer extends LitElement {
             </div>
         ` : nothing }
             <div style="display: flex;align-items: center">
+                <mwc-icon-button icon="remove_red_eye"
+                                 @click=${()=>{this.onRemoveRedEyeClick()}}></mwc-icon-button>
+                <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakerIconButtonClick()}}></mwc-icon-button>
+                <mwc-icon-button icon=search
+                                 @click=${(e) => {
+                                     if (this.selection) {
+                                         this.contextMenu.moveMenuTo(e.x, e.y)
+                                         this.contextMenu.show(this.selection)
+                                     } else {
+                                         this.openSearchManager()
+                                     }
+                                 }}></mwc-icon-button>
                 <mwc-slider
                         discrete
                         withTickMarks
@@ -200,19 +212,6 @@ export class AppContainer extends LitElement {
                         style="display: block;flex:1"
                         @input=${e=>{this.fontSize = e.detail.value}}
                 ></mwc-slider>
-                <mwc-icon-button icon=search
-                    @click=${(e)=>{
-                     if (this.selection) {
-                       this.contextMenu.moveMenuTo(e.x, e.y)
-                         this.contextMenu.show(this.selection)
-                     }
-                     else {
-                       this.openSearchManager()
-                     }
-                    }}></mwc-icon-button>
-                <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakerIconButtonClick()}}></mwc-icon-button>
-                <mwc-icon-button icon="remove_red_eye"
-                                 @click=${()=>{this.onRemoveRedEyeClick()}}></mwc-icon-button>
             </div>
         </div>
 
@@ -232,13 +231,14 @@ export class AppContainer extends LitElement {
   protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): Promise<void> {
     let mouseHold = false
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
-    this.addEventListener('pointerdown', (e) => {
+    this.addEventListener('mousedown', (e) => {
       mouseHold = true
       const target = e.composedPath()[0] as HTMLElement
 
       // if we've clicked on a part
       if (target.classList.contains('part') && target.hasAttribute('hide')) {
-        this.onParagraphClick()
+        this.onRemoveRedEyeClick()
+        // this.onParagraphClick()
       }
 
       // if we've click in the back
@@ -246,7 +246,7 @@ export class AppContainer extends LitElement {
         this.onParagraphClick()
       }
     })
-    this.addEventListener('pointerup', e=>mouseHold=false)
+    this.addEventListener('mouseup', e=>mouseHold=false)
 
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
@@ -351,7 +351,9 @@ export class AppContainer extends LitElement {
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
       // if (result.length) {
         try {
-          await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
+          if (result || (text.length > 1 && text.length <= 6)) {
+            await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
+          }
         } catch (e) {
           speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
         }
