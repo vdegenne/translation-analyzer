@@ -266,6 +266,7 @@ export class AppContainer extends LitElement {
       }
 
       if (e.code == 'Space') {
+        e.preventDefault()
         this.onRemoveRedEyeClick()
       }
 
@@ -444,9 +445,10 @@ export class AppContainer extends LitElement {
     this.onSpeakerIconButtonClick()
   }
 
-  private onCasinoButtonClick() {
+  private async onCasinoButtonClick() {
     // pick a random word
-    const word=getRandomWord([5])
-    this.fetchTranslations(word[0])
+    const word=getRandomWord([5,4])
+    await this.fetchTranslations(word[0])
+    this.feedbackBox.textContent = `fetched : ${word[0]}`
   }
 }
