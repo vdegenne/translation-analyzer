@@ -441,6 +441,7 @@ export class AppContainer extends LitElement {
   }
 
   private onRemoveRedEyeClick() {
+    window.getSelection()?.removeAllRanges()
     this.onParagraphClick()
     this.onSpeakerIconButtonClick()
   }
