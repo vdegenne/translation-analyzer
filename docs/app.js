@@ -2116,7 +2116,7 @@ const on=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
            </div>
            <hr style="margin: 0">
            <div class=translated 
-                @click=${()=>{!function(e,t=.5,o=.7){Ha(Ba(["en-US","en_US","en-GB","en_GB"],["Microsoft Mark - English (United States)","Microsoft David - English (United States)","Google US English","Microsoft Zira - English (United States)","Google UK English Female","Google UK English Male","English United States","English United Kingdom"])[0],e,t,o)}(o)}}>${o}</div>
+                @click=${()=>{!function(e,t=.8,o=.7){Ha(Ba(["en-US","en_US","en-GB","en_GB"],["Microsoft Mark - English (United States)","Microsoft David - English (United States)","Google US English","Microsoft Zira - English (United States)","Google UK English Female","Google UK English Male","English United States","English United Kingdom"])[0],e,t,o)}(o)}}>${o}</div>
          </div>
        `}))}
       `:D}

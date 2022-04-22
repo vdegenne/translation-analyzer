@@ -30,7 +30,7 @@ export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, r
   })
 }
 
-export function speakEnglish (text: string, volume = .5, rate = .7) {
+export function speakEnglish (text: string, volume = .8, rate = .7) {
   const candidates = getCandidates(['en-US', 'en_US', 'en-GB', 'en_GB'], [
     // pc
     'Microsoft Mark - English (United States)',
