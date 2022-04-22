@@ -179,7 +179,7 @@ export class AppContainer extends LitElement {
         
         <div id=paragraph-controls>
         ${this.translation && _parts.length > 1 ? html`
-            <div style="display: flex;align-items: center;justify-content: space-between;width: 100%">
+            <div style="display: flex;align-items: center;justify-content: center;width: 100%">
               <mwc-icon-button icon=arrow_back
                   ?disabled=${this.paragraphIndex === 0}
                   @click=${()=>{this.previousPage()}}></mwc-icon-button>
@@ -301,7 +301,7 @@ export class AppContainer extends LitElement {
     let selection
     setInterval(()=>{
       const documentSelection = this.selection
-      if (!mouseHold && documentSelection && documentSelection.length != 1 && documentSelection != selection) {
+      if (!mouseHold && documentSelection && documentSelection.length != 0 && documentSelection != selection) {
         const searchResult = this.searchManager.searchData(documentSelection, ['words']).filter(i=>i.dictionary!='not found')
         if (searchResult.length) {
           render(
@@ -349,9 +349,10 @@ export class AppContainer extends LitElement {
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
       // if (result.length) {
         try {
-          if (result || (text.length > 1 && text.length <= 6)) {
-            await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
+          if (result.length == 0 || text.length > 6) {
+            throw new Error(); // intentionally triggering an exception to call the rollback speaker
           }
+          await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
         } catch (e) {
           cancelSpeech() // cancel in case a speech is alredy playing
           speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
