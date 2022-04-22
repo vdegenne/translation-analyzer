@@ -168,7 +168,8 @@ export class AppContainer extends LitElement {
              ${paragraph.map(part => html`<span class=part ?hide=${part !== ' '}>${part}</span>`)}
            </div>
            <hr style="margin: 0">
-           <div class=translated>${translatedParagraph}</div>
+           <div class=translated 
+                @click=${()=>{speakEnglish(translatedParagraph)}}>${translatedParagraph}</div>
          </div>
        `
        })}
