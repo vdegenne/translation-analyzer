@@ -43,6 +43,7 @@ export class AppContainer extends LitElement {
   @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
   @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
   @query('.paragraph[selected] .source') source!: HTMLDivElement;
+  @query('.paragraph[selected] .translated') translated!: HTMLDivElement;
   @query('#feedback') feedbackBox!: HTMLDivElement;
 
   @query('search-manager') searchManager!: SearchManager;
@@ -264,6 +265,9 @@ export class AppContainer extends LitElement {
       if (e.code=='KeyA') {
         if (this.selection)
           googleImageSearch(this.selection)
+      }
+      if (e.code=='KeyE') {
+        this.translated.click()
       }
 
       if (e.code == 'Space') {
