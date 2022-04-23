@@ -31,7 +31,7 @@ export const searchItemStyles = css`
   font-size: 1.5em;
   color: black;
 }
-:host .word[exactSearch] {
+:host [highlight] {
   background-color: yellow;
 }
 :host .word[notFound] {

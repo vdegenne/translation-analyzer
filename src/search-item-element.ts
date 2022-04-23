@@ -99,7 +99,7 @@ export class SearchItemElement extends LitElement {
     <div class=header>
       <!-- <mwc-icon-button icon=volume_up style="margin-right:5px;"
         @click=${e=>this.onSpeakerClick(e)}></mwc-icon-button> -->
-      <div class="word" ?exactSearch=${this.item.exactSearch} ?notFound=${this.item.dictionary === 'not found'}>
+      <div class="word" ?highlight=${this.item.exactSearch} ?notFound=${this.item.dictionary === 'not found'}>
         ${this.item.word.split('').map(c=>{
           const kanjiData = getKanjiData(c)
           return html`<span class="character"
@@ -107,7 +107,10 @@ export class SearchItemElement extends LitElement {
             @click=${e=>{this.searchManager.show(e.target.innerText.trim(), 'kanji')}}>${c}</span>`
         })}
       </div>
-      ${this.item.hiragana ? html`<concealable-span class=hiragana .concealed=${live(!this.revealed)}>${this.item.hiragana}</concealable-span>` : nothing}
+      ${this.item.hiragana ? html`
+          <concealable-span class=hiragana .concealed=${live(!this.revealed)}
+          ?highlight=${this.item.hiragana == this.searchManager.query}>${this.item.hiragana}</concealable-span>
+      ` : nothing}
       ${this.item.dictionary === 'not found' ? html`<span class=${tagClassMap} style="margin-left:6px">${this.item.dictionary}</span>` : nothing}
       <div style="flex:1"></div>
       ${this.item.frequency ? html`

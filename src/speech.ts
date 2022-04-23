@@ -15,13 +15,13 @@ function getCandidates (langs: string[], preferredNames: string[]) {
   return candidates
 }
 
-export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, rate = .7) {
+export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, rate = .7): Promise<void> {
   return new Promise((resolve, reject) => {
     const utterance = new SpeechSynthesisUtterance();
     Object.assign(utterance, { voice, text, volume, rate })
     utterance.lang = voice.lang.replace(/_/, '-')
     utterance.onend = () => {
-      resolve(null)
+      resolve()
     }
     // utterance.voice = voice
     // utterance.text = text
@@ -30,7 +30,7 @@ export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, r
   })
 }
 
-export function speakEnglish (text: string, volume = .8, rate = .7) {
+export function speakEnglish (text: string, volume = .9, rate = .9) {
   const candidates = getCandidates(['en-US', 'en_US', 'en-GB', 'en_GB'], [
     // pc
     'Microsoft Mark - English (United States)',
@@ -44,7 +44,7 @@ export function speakEnglish (text: string, volume = .8, rate = .7) {
     'English United Kingdom',
   ])
   // console.log(candidates)
-  speak(candidates[0], text, volume, rate)
+  return speak(candidates[0], text, volume, rate)
 }
 
 export function speakJapanese (text: string, volume = 1, rate = .9) {
@@ -59,7 +59,7 @@ export function speakJapanese (text: string, volume = 1, rate = .9) {
     'Japanese Japan'
   ])
   // console.log(candidates)
-  speak(candidates[0], text, volume, rate)
+  return speak(candidates[0], text, volume, rate)
 }
 
 window.speechSynthesis.addEventListener('voiceschanged', ()=> {
@@ -73,6 +73,6 @@ window.speechSynthesis.addEventListener('voiceschanged', ()=> {
 speechSynthesis.getVoices()
 
 
-export async function cancelSpeech () {
+export function cancelSpeech () {
   spchsys.cancel()
 }

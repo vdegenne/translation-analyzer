@@ -10,6 +10,7 @@ import '@material/mwc-slider'
 import './search-manager'
 import './speech'
 import './context-menu'
+import './loop-player'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
@@ -20,6 +21,7 @@ import {cancelSpeech, speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
 import { ContextMenu } from './context-menu'
+import {LoopPlayer} from "./loop-player";
 
 declare global {
   interface Window {
@@ -45,12 +47,17 @@ export class AppContainer extends LitElement {
   @query('.paragraph[selected] .source') source!: HTMLDivElement;
   @query('.paragraph[selected] .translated') translated!: HTMLDivElement;
   @query('#feedback') feedbackBox!: HTMLDivElement;
+  @query('loop-player') loopPlayer!: LoopPlayer;
 
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
 
   get currentSource (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
+  }
+
+  get hasMoreTranslation () {
+    return this.paragraphIndex + 1 != this.paragraphs.length
   }
 
   static styles = css`
@@ -147,6 +154,7 @@ export class AppContainer extends LitElement {
                              this.openSearchManager()
                          }}>
         </mwc-icon-button> -->
+        <loop-player .appContainer=${this}></loop-player>
         <mwc-icon-button icon="casino"
             @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
       <mwc-icon-button icon=settings
@@ -275,10 +283,10 @@ export class AppContainer extends LitElement {
         this.onRemoveRedEyeClick()
       }
 
-      if (e.code=='ArrowLeft') {
+      if (e.code=='ArrowLeft' || e.code=='KeyA') {
         ;(this.shadowRoot!.querySelector('[icon=arrow_back]') as IconButton).click()
       }
-      if (e.code=='ArrowRight') {
+      if (e.code=='ArrowRight' || e.code=='KeyD') {
         ;(this.shadowRoot!.querySelector('[icon=arrow_forward]') as IconButton).click()
       }
     })
@@ -337,7 +345,7 @@ export class AppContainer extends LitElement {
     }
   }
 
-  onSpeakerIconButtonClick () {
+  async onSpeakerIconButtonClick () {
     // play selection or all
     let text = this.selection
     if (!text) {
@@ -345,7 +353,7 @@ export class AppContainer extends LitElement {
       text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
 
-    this.speak(text)
+    await this.speak(text)
   }
 
   async speak (text:string) {
@@ -360,13 +368,17 @@ export class AppContainer extends LitElement {
           await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
         } catch (e) {
           cancelSpeech() // cancel in case a speech is alredy playing
-          speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
+          await speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
         }
       // }
       // else {
       //   speakJapanese(text)
       // }
     }
+  }
+
+  async speakTranslatedParagraph () {
+    await speakEnglish(this.translated.textContent!)
   }
 
   async load (translation: Translation) {
@@ -410,7 +422,7 @@ export class AppContainer extends LitElement {
 
     if (translations.length === 0) {
       window.toast('no results')
-      return
+      return null
     }
 
     let translation: Translation
@@ -434,6 +446,8 @@ export class AppContainer extends LitElement {
     this.pasteBox.load(translation)
     this.pasteBox.submit()
     this.searchManager.close()
+
+    return translation
   }
 
   private openSearchManager() {
@@ -446,10 +460,10 @@ export class AppContainer extends LitElement {
     }
   }
 
-  private onRemoveRedEyeClick() {
+  public async onRemoveRedEyeClick() {
     window.getSelection()?.removeAllRanges()
     this.onParagraphClick()
-    this.onSpeakerIconButtonClick()
+    await this.onSpeakerIconButtonClick()
   }
 
   private async onCasinoButtonClick() {
