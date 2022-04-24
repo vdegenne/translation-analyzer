@@ -16,7 +16,7 @@ import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {getRandomWord, SearchManager} from "./search-manager";
-import {googleImageSearch, playJapaneseAudio} from './util'
+import {googleImageSearch, playJapaneseAudio, ringTheBell} from './util'
 import {cancelSpeech, speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
@@ -354,6 +354,11 @@ export class AppContainer extends LitElement {
     }
 
     await this.speak(text)
+
+    if (text == this.currentSource) {
+      // bell
+      await ringTheBell()
+    }
   }
 
   async speak (text:string) {

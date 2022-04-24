@@ -42,30 +42,30 @@ export class LoopPlayer extends LitElement {
     if (this._freshTranslation) {
       console.log('speaking the translated paragraph')
       await this.appContainer.speakTranslatedParagraph()
-      nextTimeoutMs = 5000
+      nextTimeoutMs = 7000
       this._freshTranslation = false
     }
     else if (this.appContainer.nextHiddenPart !== null) {
       console.log('reading next part')
       await this.appContainer.onRemoveRedEyeClick()
       if (this.appContainer.nextHiddenPart !== null) {
-        nextTimeoutMs = 5000
+        nextTimeoutMs = 7000
       }
       else {
-        nextTimeoutMs = 5000 // jumping the next translation
+        nextTimeoutMs = 15 * 1000 // jumping the next translation
       }
     }
     else if (/* is there a next translation or should we fetch a new set? */ this.appContainer.hasMoreTranslation) {
       console.log('switching to next page')
       this.appContainer.nextPage()
-      nextTimeoutMs = 5000
+      nextTimeoutMs = 2000
       this._freshTranslation = true
     }
     else {
       console.log('no next page we fetch a new word')
       // we fetch a new translation set
       while ((await window.app.fetchTranslations(getRandomWord()[0])) == null)
-      nextTimeoutMs = 5000 // will speak the english part
+      nextTimeoutMs = 2000 // will speak the english part
       this._freshTranslation = true
     }
 

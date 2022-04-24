@@ -46,3 +46,9 @@ export async function playJapaneseAudio (word) {
 export function getKanjiData (character: string) {
   return (_kanjis as Kanji[]).find(k => k[1] === character)
 }
+
+
+const bellAudio = new Audio('./audio/bell.mp3')
+export async function ringTheBell() {
+  await bellAudio.play()
+}
