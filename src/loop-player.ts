@@ -37,26 +37,28 @@ export class LoopPlayer extends LitElement {
   async executionFunction () {
     if (this.playing == false) { return }
     let nextTimeoutMs = 5000
-    // get the first part if it's hidden we should play the english paragraph first
-    const firstPart = this.appContainer.shadowRoot!.querySelector('.paragraph[selected] .part')!
+    // const firstPart = this.appContainer.shadowRoot!.querySelector('.paragraph[selected] .part')!
     if (this._freshTranslation) {
-      console.log('speaking the translated paragraph')
+      // console.log('speaking the translated paragraph')
       await this.appContainer.speakTranslatedParagraph()
       nextTimeoutMs = 7000
       this._freshTranslation = false
     }
     else if (this.appContainer.nextHiddenPart !== null) {
-      console.log('reading next part')
-      await this.appContainer.onRemoveRedEyeClick()
+      // console.log('reading next part')
+      // this.appContainer.revealNextPart()
+      // await this.appContainer.speakVisibleSource()
+      await this.appContainer.speakNextPart()
+      // await this.appContainer.onRemoveRedEyeClick()
       if (this.appContainer.nextHiddenPart !== null) {
-        nextTimeoutMs = 7000
+        nextTimeoutMs = 9000
       }
       else {
-        nextTimeoutMs = 15 * 1000 // jumping the next translation
+        nextTimeoutMs = 20 * 1000 // jumping to the next translation
       }
     }
     else if (/* is there a next translation or should we fetch a new set? */ this.appContainer.hasMoreTranslation) {
-      console.log('switching to next page')
+      // console.log('switching to next page')
       this.appContainer.nextPage()
       nextTimeoutMs = 2000
       this._freshTranslation = true

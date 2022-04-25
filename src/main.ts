@@ -36,28 +36,41 @@ export class AppContainer extends LitElement {
   @state() paragraphIndex = 0
   @state() fontSize = 42;
 
-  // private _parts: string[][] = []
+  //
+  @queryAll('.part') partElements!: HTMLSpanElement[];
+  @queryAll('.paragraph[selected] .source .part') sourcePartElements!: HTMLSpanElement[];
+  @queryAll('.paragraph') paragraphElements!: HTMLDivElement[];
 
-  @query('paste-box') pasteBox!: PasteBox;
-  @queryAll('.part') parts!: HTMLSpanElement[];
-  @queryAll('.paragraph') paragraphs!: HTMLDivElement[];
   // next hidden part
-  @query('.paragraph[selected] .part[hide]') nextHiddenPart?: HTMLSpanElement;
-  @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
-  @query('.paragraph[selected] .source') source!: HTMLDivElement;
-  @query('.paragraph[selected] .translated') translated!: HTMLDivElement;
-  @query('#feedback') feedbackBox!: HTMLDivElement;
-  @query('loop-player') loopPlayer!: LoopPlayer;
+  @query('.paragraph[selected] .source') sourceElement!: HTMLDivElement;
+  @query('.paragraph[selected] .source .part[hide]') nextHiddenPart!: HTMLSpanElement;
+  @query('.paragraph[selected] .translated') translatedElement!: HTMLDivElement;
 
+  // @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
+
+  @query('#feedback') feedbackBox!: HTMLDivElement;
+  @query('paste-box') pasteBox!: PasteBox;
+  @query('loop-player') loopPlayer!: LoopPlayer;
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
 
-  get currentSource (): string {
+  get sourceContent (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
   }
 
+  get visibleSourceContent () {
+    const includes: HTMLSpanElement[] = []
+    for (const el of this.sourcePartElements) {
+      if (el.hasAttribute('hide')) {
+        break
+      }
+      includes.push(el)
+    }
+    return includes.map(el=>el.textContent).join('')
+  }
+
   get hasMoreTranslation () {
-    return this.paragraphIndex + 1 != this.paragraphs.length
+    return this.paragraphIndex + 1 != this.paragraphElements.length
   }
 
   static styles = css`
@@ -201,8 +214,8 @@ export class AppContainer extends LitElement {
         ` : nothing }
             <div style="display: flex;align-items: center">
                 <mwc-icon-button icon="remove_red_eye"
-                                 @click=${()=>{this.onRemoveRedEyeClick()}}></mwc-icon-button>
-                <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakerIconButtonClick()}}></mwc-icon-button>
+                                 @click=${()=>{this.speakNextPart()}}></mwc-icon-button>
+                <mwc-icon-button icon=volume_up @click=${()=>{this.speakSource()}}></mwc-icon-button>
                 <mwc-icon-button icon=search
                                  @click=${(e) => {
                                      if (this.selection) {
@@ -247,13 +260,13 @@ export class AppContainer extends LitElement {
 
       // if we've clicked on a part
       if (target.classList.contains('part') && target.hasAttribute('hide')) {
-        this.onRemoveRedEyeClick()
+        this.speakNextPart()
         // this.onParagraphClick()
       }
 
       // if we've click in the back
       if (e.button==0 && ['app', 'translations'].includes(target.id) && !this.selection && !this.contextMenu.open) {
-        this.onRemoveRedEyeClick()
+        this.speakNextPart()
         // this.onParagraphClick()
       }
     })
@@ -262,7 +275,7 @@ export class AppContainer extends LitElement {
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
       if (e.code == 'KeyS') {
-        this.onSpeakerIconButtonClick()
+        this.speakSource()
       }
       if (e.code == 'Digit1') {
         const selection = this.selection
@@ -275,12 +288,12 @@ export class AppContainer extends LitElement {
           googleImageSearch(this.selection)
       }
       if (e.code=='KeyE') {
-        this.translated.click()
+        this.translatedElement.click()
       }
 
       if (e.code == 'Space') {
         e.preventDefault()
-        this.onRemoveRedEyeClick()
+        this.speakNextPart()
       }
 
       if (e.code=='ArrowLeft' || e.code=='KeyA') {
@@ -333,35 +346,41 @@ export class AppContainer extends LitElement {
     }
   }
   nextPage () {
-    if (this.paragraphIndex + 1 !== this.paragraphs.length) {
+    if (this.paragraphIndex + 1 !== this.paragraphElements.length) {
       this.paragraphIndex++
     }
   }
 
-  onParagraphClick () {
+  revealNextPart () {
     const nextHiddenPart = this.nextHiddenPart
     if (nextHiddenPart) {
       nextHiddenPart.removeAttribute('hide')
     }
   }
 
-  async onSpeakerIconButtonClick () {
+  async speakSource (selectionPriority= true) {
     // play selection or all
     let text = this.selection
-    if (!text) {
-      // text = this.currentSource;
-      text = [...this.source.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
+    if (!selectionPriority || text == '') {
+      text = this.visibleSourceContent
+      // text = [...this.sourceElement.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
 
-    await this.speak(text)
+    try {
+      if (!text) { throw new Error() }
+      // @TODO : the function here should throw if it was intentionally stopped
+      await this.speak(text)
+    } catch (e) {
+      return
+    }
 
-    if (text == this.currentSource) {
+    if (text == this.sourceContent) {
       // bell
       await ringTheBell()
     }
   }
 
-  async speak (text:string) {
+  async speak (text:string, rate = .7) {
     if (isFullJapanese(text)) {
       // is the selection in the words
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
@@ -373,7 +392,7 @@ export class AppContainer extends LitElement {
           await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
         } catch (e) {
           cancelSpeech() // cancel in case a speech is alredy playing
-          await speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text)
+          await speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text, 1, rate)
         }
       // }
       // else {
@@ -382,8 +401,13 @@ export class AppContainer extends LitElement {
     }
   }
 
+  async speakVisibleSource () {
+    // console.log(this.visibleSourceContent)
+    this.speakSource(false) // play the visible source without selection matter
+  }
+
   async speakTranslatedParagraph () {
-    await speakEnglish(this.translated.textContent!)
+    await speakEnglish(this.translatedElement.textContent!)
   }
 
   async load (translation: Translation) {
@@ -393,7 +417,7 @@ export class AppContainer extends LitElement {
     this.translation = translation;
     this.paragraphIndex = 0
     await this.updateComplete
-    this.parts.forEach(el=>{if(el.innerText!==' ') {el.setAttribute('hide', '')}})
+    this.partElements.forEach(el=>{if(el.innerText!==' ') {el.setAttribute('hide', '')}})
     return
     // let paragraphs = translation.source.split('\n').filter(p=>p) // the filter removes empty lines
     // switch (translation.lang) {
@@ -465,10 +489,10 @@ export class AppContainer extends LitElement {
     }
   }
 
-  public async onRemoveRedEyeClick() {
-    window.getSelection()?.removeAllRanges()
-    this.onParagraphClick()
-    await this.onSpeakerIconButtonClick()
+  public async speakNextPart() {
+    // window.getSelection()?.removeAllRanges()
+    this.revealNextPart()
+    await this.speakSource(false)
   }
 
   private async onCasinoButtonClick() {
