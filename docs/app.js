@@ -1913,6 +1913,7 @@ const Oa=re`mwc-list ::slotted([mwc-list-item]:not([twoline])),mwc-list ::slotte
     `}firstUpdated(e){this.menu.anchor=this,super.firstUpdated(e),this.addEventListener("click",(e=>{this.menu.show()}))}moveMenuTo(e,t){this.style.left=`${e}px`,this.style.top=`${t}px`}show(e){e&&(this.value=e),this.menu.show()}get open(){return this.menu.open}};Ga.styles=re`
     :host {
       position: fixed;
+      --mdc-menu-item-height: 38px;
     }
   `,r([we()],Ga.prototype,"value",void 0),r([_e("mwc-menu")],Ga.prototype,"menu",void 0),Ga=r([be("context-menu")],Ga);let Ja=class extends he{constructor(){super(...arguments),this.playing=void 0,this._freshTranslation=!0}render(){return L`
       <mwc-icon-button icon="${this.playing?"stop_arrow":"play_arrow"}"

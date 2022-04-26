@@ -14,6 +14,7 @@ export class ContextMenu extends LitElement {
   static styles = css`
     :host {
       position: fixed;
+      --mdc-menu-item-height: 38px;
     }
   `
   protected render(): unknown {
