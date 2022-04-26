@@ -44,13 +44,13 @@ export class LoopPlayer extends LitElement {
       nextTimeoutMs = 7000
       this._freshTranslation = false
     }
-    else if (this.appContainer.nextHiddenPart !== null) {
+    else if (this.appContainer.nextConcealedPart !== null) {
       // console.log('reading next part')
       // this.appContainer.revealNextPart()
       // await this.appContainer.speakVisibleSource()
       await this.appContainer.speakNextPart()
       // await this.appContainer.onRemoveRedEyeClick()
-      if (this.appContainer.nextHiddenPart !== null) {
+      if (this.appContainer.nextConcealedPart !== null) {
         nextTimeoutMs = 9000
       }
       else {

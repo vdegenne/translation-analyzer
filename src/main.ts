@@ -22,6 +22,7 @@ import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
 import { ContextMenu } from './context-menu'
 import {LoopPlayer} from "./loop-player";
+import {Slider} from "@material/mwc-slider";
 
 declare global {
   interface Window {
@@ -36,6 +37,8 @@ export class AppContainer extends LitElement {
   @state() paragraphIndex = 0
   @state() fontSize = 42;
 
+  private _playbackRate = .7
+
   //
   @queryAll('.part') partElements!: HTMLSpanElement[];
   @queryAll('.paragraph[selected] .source .part') sourcePartElements!: HTMLSpanElement[];
@@ -43,7 +46,7 @@ export class AppContainer extends LitElement {
 
   // next hidden part
   @query('.paragraph[selected] .source') sourceElement!: HTMLDivElement;
-  @query('.paragraph[selected] .source .part[hide]') nextHiddenPart!: HTMLSpanElement;
+  @query('.paragraph[selected] .source .part[conceal]') nextConcealedPart!: HTMLSpanElement;
   @query('.paragraph[selected] .translated') translatedElement!: HTMLDivElement;
 
   // @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
@@ -53,6 +56,8 @@ export class AppContainer extends LitElement {
   @query('loop-player') loopPlayer!: LoopPlayer;
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
+  @query('mwc-slider#speed-slider') speedSlider!: Slider;
+
 
   get sourceContent (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
@@ -61,7 +66,7 @@ export class AppContainer extends LitElement {
   get visibleSourceContent () {
     const includes: HTMLSpanElement[] = []
     for (const el of this.sourcePartElements) {
-      if (el.hasAttribute('hide')) {
+      if (el.hasAttribute('conceal')) {
         break
       }
       includes.push(el)
@@ -81,6 +86,9 @@ export class AppContainer extends LitElement {
       align-items: center;
       height: 100vh;
     }
+    [hide] {
+      visibility: hidden;
+    }
     #translations {
       flex: 1;
       display: flex;
@@ -99,12 +107,12 @@ export class AppContainer extends LitElement {
     /* cursor: pointer; */
     font-family: 'Shippori Mincho', serif;
   }
-    .part[hide] {
+    .part[conceal] {
       user-select: none;
       cursor: pointer;
       /* border-radius: 3px; */
     }
-  [hide] {
+  [conceal] {
     background-color: #e0e0e0 !important;
     color: transparent !important;
   }
@@ -127,6 +135,14 @@ export class AppContainer extends LitElement {
       padding: 10px;
       box-sizing: border-box;
     }
+    
+   .slider-popbox {
+     background-color: #e0e0e0;
+     position: absolute;
+     top:-48px;
+     width:100%;
+     border-radius: 10px;
+   } 
   `
 
   get selection () {
@@ -187,7 +203,7 @@ export class AppContainer extends LitElement {
          return html`
          <div class=paragraph ?selected=${this.paragraphIndex === i}>
            <div class=source>
-             ${paragraph.map(part => html`<span class=part ?hide=${part !== ' '}>${part}</span>`)}
+             ${paragraph.map(part => html`<span class=part ?conceal=${part !== ' '}>${part}</span>`)}
            </div>
            <hr style="margin: 0">
            <div class=translated 
@@ -212,7 +228,7 @@ export class AppContainer extends LitElement {
                   @click=${()=>{this.nextPage()}}></mwc-icon-button>
             </div>
         ` : nothing }
-            <div style="display: flex;align-items: center">
+            <div style="display: flex;align-items: center;position: relative">
                 <mwc-icon-button icon="remove_red_eye"
                                  @click=${()=>{this.speakNextPart()}}></mwc-icon-button>
                 <mwc-icon-button icon=volume_up @click=${()=>{this.speakSource()}}></mwc-icon-button>
@@ -225,6 +241,23 @@ export class AppContainer extends LitElement {
                                          this.openSearchManager()
                                      }
                                  }}></mwc-icon-button>
+                
+                <!-- SPEED ADJUSTMENT -->
+                <div class="slider-popbox" hide>
+                    <mwc-slider
+                            id="speed-slider"
+                            discrete
+                            withTickMarks
+                            min="30"
+                            max="100"
+                            step="10"
+                            value=${this._playbackRate*100}
+                            @change=${e=> {this._playbackRate = e.detail.value / 100}}
+                    ></mwc-slider>
+                </div>
+                <mwc-icon-button icon="speed"
+                    @click=${(e)=>{e.target.previousElementSibling.toggleAttribute('hide')}}></mwc-icon-button>
+                
                 <mwc-slider
                         discrete
                         withTickMarks
@@ -254,12 +287,35 @@ export class AppContainer extends LitElement {
   protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): Promise<void> {
     let mouseHold = false
     this.addEventListener('upload', e => this.load((e as CustomEvent).detail.translation))
+    window.addEventListener('contextmenu', e => {
+      if (e.button == 2)
+        e.preventDefault()
+    })
+
+    /** Mouse **/
     this.addEventListener('mousedown', (e) => {
-      mouseHold = true
+      /* contextual menu ? */
+      if (e.button == 2) {
+        if (this.selection || this.contextMenu.value) {
+          this.contextMenu.moveMenuTo(e.x, e.y)
+          this.contextMenu.show(this.selection)
+        }
+        return
+      }
+
       const target = e.composedPath()[0] as HTMLElement
 
+      /* close slider popbox and do nothing ? */
+      if (!this.speedSlider.parentElement!.hasAttribute('hide')) {
+        if (target.id == 'speed-slider') { return }
+        this.speedSlider.parentElement!.setAttribute('hide', '')
+        return
+      }
+
+      mouseHold = true // mouse hold state
+
       // if we've clicked on a part
-      if (target.classList.contains('part') && target.hasAttribute('hide')) {
+      if (target.classList.contains('part') && target.hasAttribute('conceal')) {
         this.speakNextPart()
         // this.onParagraphClick()
       }
@@ -272,6 +328,7 @@ export class AppContainer extends LitElement {
     })
     this.addEventListener('mouseup', e=>mouseHold=false)
 
+    /** Keyboard **/
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
       if (e.code == 'KeyS') {
@@ -303,18 +360,8 @@ export class AppContainer extends LitElement {
         ;(this.shadowRoot!.querySelector('[icon=arrow_forward]') as IconButton).click()
       }
     })
-    window.addEventListener('contextmenu', e => {
-      if (e.button == 2)
-        e.preventDefault()
-    })
-    window.addEventListener('pointerdown', (e) => {
-      if (e.button == 2) {
-        if (this.selection || this.contextMenu.value) {
-          this.contextMenu.moveMenuTo(e.x, e.y)
-          this.contextMenu.show(this.selection)
-        }
-      }
-    })
+    // window.addEventListener('pointerdown', (e) => {
+    // })
 
     this.pasteBox.loadFromRemote().then(() => {
       this.pasteBox.submit()
@@ -338,6 +385,9 @@ export class AppContainer extends LitElement {
         selection = documentSelection
       }
     }, 1200)
+
+    /** decimal values **/
+    this.speedSlider.valueToValueIndicatorTransform = (A) => ''+(A/100)
   }
 
   previousPage () {
@@ -352,9 +402,9 @@ export class AppContainer extends LitElement {
   }
 
   revealNextPart () {
-    const nextHiddenPart = this.nextHiddenPart
-    if (nextHiddenPart) {
-      nextHiddenPart.removeAttribute('hide')
+    const nextConcealedPart = this.nextConcealedPart
+    if (nextConcealedPart) {
+      nextConcealedPart.removeAttribute('conceal')
     }
   }
 
@@ -380,7 +430,7 @@ export class AppContainer extends LitElement {
     }
   }
 
-  async speak (text:string, rate = .7) {
+  async speak (text:string, rate = this._playbackRate) {
     if (isFullJapanese(text)) {
       // is the selection in the words
       const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
@@ -417,7 +467,7 @@ export class AppContainer extends LitElement {
     this.translation = translation;
     this.paragraphIndex = 0
     await this.updateComplete
-    this.partElements.forEach(el=>{if(el.innerText!==' ') {el.setAttribute('hide', '')}})
+    this.concealAllParts()
     return
     // let paragraphs = translation.source.split('\n').filter(p=>p) // the filter removes empty lines
     // switch (translation.lang) {
@@ -431,6 +481,11 @@ export class AppContainer extends LitElement {
     //     this._parts = paragraphs.map(p=>p.split(''))
     //     break
     // }
+  }
+
+  concealAllParts () {
+    // @TODO conceal punctuations
+    this.partElements.forEach(el=>{if(el.innerText!==' ') {el.setAttribute('conceal', '')}})
   }
 
   public async fetchTranslations (word: string) {
