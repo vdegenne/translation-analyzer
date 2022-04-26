@@ -1,5 +1,16 @@
-import {LitElement, html, css, PropertyValueMap, nothing, PropertyValues, render} from 'lit'
+import {
+  LitElement,
+  html,
+  css,
+  PropertyValueMap,
+  nothing,
+  PropertyValues,
+  render,
+  unsafeCSS,
+  HTMLTemplateResult
+} from 'lit'
 import { customElement, query, queryAll, state } from 'lit/decorators.js'
+import {unsafeHTML} from 'lit/directives/unsafe-html.js'
 import '@material/mwc-snackbar'
 import '@material/mwc-button'
 import '@material/mwc-icon-button'
@@ -35,7 +46,8 @@ declare global {
 export class AppContainer extends LitElement {
   @state() translation?: Translation;
   @state() paragraphIndex = 0
-  @state() fontSize = 42;
+  @state() fontSize = 28;
+  @state() feedback: string = '';
 
   private _playbackRate = .7
 
@@ -118,10 +130,10 @@ export class AppContainer extends LitElement {
   }
 
     header {
+      display: flex;
+      align-items: stretch;
+      /* justify-content: center; */
       width: 100%;
-      /*position: absolute;
-      top: 0;*/
-      
     }
 
     #paragraph-controls {
@@ -140,9 +152,16 @@ export class AppContainer extends LitElement {
      background-color: #e0e0e0;
      position: absolute;
      top:-48px;
+     left: 24px;
+     right: 24px;
      width:100%;
      border-radius: 10px;
-   } 
+   }
+    #feedback {
+      flex: 1;
+      padding: 12px;
+      font-family: 'Shippori Mincho', serif;
+    }
   `
 
   get selection () {
@@ -176,8 +195,9 @@ export class AppContainer extends LitElement {
                 font-size: ${this.fontSize}px !important;
             }
         </style>
-    <header style="display:flex;align-items:center;justify-content:space-between">
-      <div id=feedback style="flex: 1"></div>
+        
+    <header>
+      <div id=feedback>${unsafeHTML(this.feedback)}</div>
         <!-- <mwc-icon-button icon="search"
                          @click=${() => {
                              this.openSearchManager()
@@ -248,7 +268,7 @@ export class AppContainer extends LitElement {
                             id="speed-slider"
                             discrete
                             withTickMarks
-                            min="30"
+                            min="20"
                             max="100"
                             step="10"
                             value=${this._playbackRate*100}
@@ -308,7 +328,8 @@ export class AppContainer extends LitElement {
       /* close slider popbox and do nothing ? */
       if (!this.speedSlider.parentElement!.hasAttribute('hide')) {
         if (target.id == 'speed-slider') { return }
-        this.speedSlider.parentElement!.setAttribute('hide', '')
+        // we timeout to make sure the click event is not opening the menu again from the mwc-icon-button
+        setTimeout(()=>this.speedSlider.parentElement!.setAttribute('hide', ''), 100)
         return
       }
 
@@ -377,10 +398,11 @@ export class AppContainer extends LitElement {
       if (!mouseHold && documentSelection && documentSelection.length != 0 && documentSelection != selection) {
         const searchResult = this.searchManager.searchData(documentSelection, ['words']).filter(i=>i.dictionary!='not found')
         if (searchResult.length) {
-          render(
-            html`${searchResult[0].word} ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : nothing}`,
-            this.feedbackBox
-          )
+          // render(
+          //
+          //   this.feedbackBox
+          // )
+          this.feedback = `${searchResult[0].word} ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : ''}`
         }
         selection = documentSelection
       }
@@ -554,6 +576,6 @@ export class AppContainer extends LitElement {
     // pick a random word
     const word=getRandomWord([5,4])
     await this.fetchTranslations(word[0])
-    this.feedbackBox.textContent = `fetched : ${word[0]}`
+    this.feedback = `fetched : ${word[0]}`
   }
 }
