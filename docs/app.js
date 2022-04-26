@@ -2234,6 +2234,11 @@ const sn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
       /* justify-content: center; */
       width: 100%;
     }
+    #feedback {
+      flex: 1;
+      padding: 12px;
+      font-family: 'Shippori Mincho', serif;
+    }
 
     #paragraph-controls {
       /* display: flex;
@@ -2253,13 +2258,8 @@ const sn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
      top:-48px;
      left: 24px;
      right: 24px;
-     width:100%;
+     /* width:100%; */
      border-radius: 10px;
    }
-    #feedback {
-      flex: 1;
-      padding: 12px;
-      font-family: 'Shippori Mincho', serif;
-    }
   `,r([we()],pn.prototype,"translation",void 0),r([we()],pn.prototype,"paragraphIndex",void 0),r([we()],pn.prototype,"fontSize",void 0),r([we()],pn.prototype,"feedback",void 0),r([Ee(".part")],pn.prototype,"partElements",void 0),r([Ee(".paragraph[selected] .source .part")],pn.prototype,"sourcePartElements",void 0),r([Ee(".paragraph")],pn.prototype,"paragraphElements",void 0),r([_e(".paragraph[selected] .source")],pn.prototype,"sourceElement",void 0),r([_e(".paragraph[selected] .source .part[conceal]")],pn.prototype,"nextConcealedPart",void 0),r([_e(".paragraph[selected] .translated")],pn.prototype,"translatedElement",void 0),r([_e("#feedback")],pn.prototype,"feedbackBox",void 0),r([_e("paste-box")],pn.prototype,"pasteBox",void 0),r([_e("loop-player")],pn.prototype,"loopPlayer",void 0),r([_e("search-manager")],pn.prototype,"searchManager",void 0),r([_e("context-menu")],pn.prototype,"contextMenu",void 0),r([_e("mwc-slider#speed-slider")],pn.prototype,"speedSlider",void 0),pn=r([be("app-container")],pn);export{pn as AppContainer};
 //# sourceMappingURL=app.js.map

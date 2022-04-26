@@ -135,6 +135,11 @@ export class AppContainer extends LitElement {
       /* justify-content: center; */
       width: 100%;
     }
+    #feedback {
+      flex: 1;
+      padding: 12px;
+      font-family: 'Shippori Mincho', serif;
+    }
 
     #paragraph-controls {
       /* display: flex;
@@ -154,14 +159,9 @@ export class AppContainer extends LitElement {
      top:-48px;
      left: 24px;
      right: 24px;
-     width:100%;
+     /* width:100%; */
      border-radius: 10px;
    }
-    #feedback {
-      flex: 1;
-      padding: 12px;
-      font-family: 'Shippori Mincho', serif;
-    }
   `
 
   get selection () {
