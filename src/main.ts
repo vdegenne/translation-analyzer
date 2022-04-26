@@ -47,7 +47,7 @@ export class AppContainer extends LitElement {
   @state() translation?: Translation;
   @state() paragraphIndex = 0
   @state() fontSize = 28;
-  @state() feedback: string = '';
+  @state() feedback: HTMLTemplateResult = html``;
 
   private _playbackRate = .7
 
@@ -197,7 +197,7 @@ export class AppContainer extends LitElement {
         </style>
         
     <header>
-      <div id=feedback>${unsafeHTML(this.feedback)}</div>
+      <div id=feedback>${this.feedback}</div>
         <!-- <mwc-icon-button icon="search"
                          @click=${() => {
                              this.openSearchManager()
@@ -402,7 +402,7 @@ export class AppContainer extends LitElement {
           //
           //   this.feedbackBox
           // )
-          this.feedback = `${searchResult[0].word} ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : ''}`
+          this.feedback = html`<span @click=${()=>{window.app.searchManager.show(searchResult[0].word)}}>${searchResult[0].word}</span> ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : ''}`
         }
         selection = documentSelection
       }
@@ -576,6 +576,6 @@ export class AppContainer extends LitElement {
     // pick a random word
     const word=getRandomWord([5,4])
     await this.fetchTranslations(word[0])
-    this.feedback = `fetched : ${word[0]}`
+    this.feedback = html`fetched : ${word[0]}`
   }
 }

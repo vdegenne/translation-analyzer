@@ -14,6 +14,8 @@ export class ContextMenu extends LitElement {
   static styles = css`
     :host {
       position: fixed;
+    }
+    mwc-list-item:not([noninteractive]) {
       --mdc-menu-item-height: 38px;
     }
   `
@@ -25,7 +27,8 @@ export class ContextMenu extends LitElement {
 
     return html`
       <mwc-menu fixed quick>
-          <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'">
+          <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'"
+            @click=${()=>{window.app.searchManager.show(this.value)}}>
               <span>${this.value}</span>
               ${exactSearch && exactSearch[1]
                       ? html`<br><span>${exactSearch[0] == this.value ? exactSearch[1] : exactSearch[0]}</span>` 
