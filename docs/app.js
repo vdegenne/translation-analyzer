@@ -2235,8 +2235,9 @@ const nn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
     }
     #feedback {
       flex: 1;
-      padding: 12px;
+      padding: 12px 0 0 12px;
       font-family: 'Shippori Mincho', serif;
+      font-size: 1.5em;
     }
 
     #paragraph-controls {

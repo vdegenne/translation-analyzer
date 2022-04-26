@@ -137,8 +137,9 @@ export class AppContainer extends LitElement {
     }
     #feedback {
       flex: 1;
-      padding: 12px;
+      padding: 12px 0 0 12px;
       font-family: 'Shippori Mincho', serif;
+      font-size: 1.5em;
     }
 
     #paragraph-controls {
