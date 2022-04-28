@@ -438,6 +438,11 @@ export class AppContainer extends LitElement {
       text = this.visibleSourceContent
       // text = [...this.sourceElement.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
     }
+    // play everything if no selection and no part is revealed
+    if (!text) {
+      text = this.sourceContent
+    }
+
 
     try {
       if (!text) { throw new Error() }
