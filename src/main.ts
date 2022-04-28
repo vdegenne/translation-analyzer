@@ -403,7 +403,11 @@ export class AppContainer extends LitElement {
           //
           //   this.feedbackBox
           // )
-          this.feedback = html`<span @click=${()=>{window.app.searchManager.show(searchResult[0].word)}}>${searchResult[0].word}</span> ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : ''}`
+          this.feedback = html`<mwc-button
+                  outlined
+                  @click=${()=>{window.app.searchManager.show(searchResult[0].word)}}
+                  style='--mdc-typography-button-font-family: "Shippori Mincho", serif;--mdc-typography-button-font-size:18px;'
+          >${searchResult[0].word} ${searchResult[0].hiragana ? `(${searchResult[0].hiragana})` : ''}</mwc-button>`
         }
         selection = documentSelection
       }
