@@ -48,6 +48,7 @@ export class AppContainer extends LitElement {
   @state() paragraphIndex = 0
   @state() fontSize = 28;
   @state() feedback: HTMLTemplateResult = html``;
+  @state() showTranslated = false
 
   private _playbackRate = .7
 
@@ -228,6 +229,7 @@ export class AppContainer extends LitElement {
            </div>
            <hr style="margin: 0">
            <div class=translated 
+                ?conceal=${!this.showTranslated}
                 @click=${()=>{speakEnglish(translatedParagraph)}}>${translatedParagraph}</div>
          </div>
        `
@@ -278,6 +280,9 @@ export class AppContainer extends LitElement {
                 </div>
                 <mwc-icon-button icon="speed"
                     @click=${(e)=>{e.target.previousElementSibling.toggleAttribute('hide')}}></mwc-icon-button>
+                
+                <mwc-icon-button icon="${this.showTranslated ? 'subtitles' : 'subtitles_off'}"
+                    @click=${()=>{this.showTranslated=!this.showTranslated}}></mwc-icon-button>
                 
                 <mwc-slider
                         discrete

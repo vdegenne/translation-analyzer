@@ -2095,7 +2095,7 @@ const nn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
     min-height: 200px;
     margin: 12px 0;
   }
-  `,r([_e("mwc-dialog")],cn.prototype,"dialog",void 0),r([_e("mwc-select")],cn.prototype,"select",void 0),r([_e("textarea:nth-of-type(1)")],cn.prototype,"sourceArea",void 0),r([_e("textarea:nth-of-type(2)")],cn.prototype,"translationArea",void 0),cn=r([be("paste-box")],cn);let dn=class extends he{constructor(){super(...arguments),this.paragraphIndex=0,this.fontSize=28,this.feedback=L``,this._playbackRate=.7}get sourceContent(){var e;return null===(e=this.translation)||void 0===e?void 0:e.source.split("\n").filter((e=>e))[this.paragraphIndex]}get visibleSourceContent(){const e=[];for(const t of this.sourcePartElements){if(t.hasAttribute("conceal"))break;e.push(t)}return e.map((e=>e.textContent)).join("")}get hasMoreTranslation(){return this.paragraphIndex+1!=this.paragraphElements.length}get selection(){var e;return null===(e=document.getSelection())||void 0===e?void 0:e.toString()}render(){let e;if(this.translation){let t=this.translation.source.split("\n").filter((e=>e));switch(this.translation.lang){case"French":e=t.map((e=>e.replace(/\ /g," <space> ").split(" ").map((e=>"<space>"==e?" ":e))));break;case"Japanese":case"Korean":e=t.map((e=>e.split("")))}}return L`
+  `,r([_e("mwc-dialog")],cn.prototype,"dialog",void 0),r([_e("mwc-select")],cn.prototype,"select",void 0),r([_e("textarea:nth-of-type(1)")],cn.prototype,"sourceArea",void 0),r([_e("textarea:nth-of-type(2)")],cn.prototype,"translationArea",void 0),cn=r([be("paste-box")],cn);let dn=class extends he{constructor(){super(...arguments),this.paragraphIndex=0,this.fontSize=28,this.feedback=L``,this.showTranslated=!1,this._playbackRate=.7}get sourceContent(){var e;return null===(e=this.translation)||void 0===e?void 0:e.source.split("\n").filter((e=>e))[this.paragraphIndex]}get visibleSourceContent(){const e=[];for(const t of this.sourcePartElements){if(t.hasAttribute("conceal"))break;e.push(t)}return e.map((e=>e.textContent)).join("")}get hasMoreTranslation(){return this.paragraphIndex+1!=this.paragraphElements.length}get selection(){var e;return null===(e=document.getSelection())||void 0===e?void 0:e.toString()}render(){let e;if(this.translation){let t=this.translation.source.split("\n").filter((e=>e));switch(this.translation.lang){case"French":e=t.map((e=>e.replace(/\ /g," <space> ").split(" ").map((e=>"<space>"==e?" ":e))));break;case"Japanese":case"Korean":e=t.map((e=>e.split("")))}}return L`
         <style>
             .paragraph {
                 font-size: ${this.fontSize}px !important;
@@ -2128,6 +2128,7 @@ const nn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
            </div>
            <hr style="margin: 0">
            <div class=translated 
+                ?conceal=${!this.showTranslated}
                 @click=${()=>{Va(o)}}>${o}</div>
          </div>
        `}))}
@@ -2169,6 +2170,9 @@ const nn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
                 </div>
                 <mwc-icon-button icon="speed"
                     @click=${e=>{e.target.previousElementSibling.toggleAttribute("hide")}}></mwc-icon-button>
+                
+                <mwc-icon-button icon="${this.showTranslated?"subtitles":"subtitles_off"}"
+                    @click=${()=>{this.showTranslated=!this.showTranslated}}></mwc-icon-button>
                 
                 <mwc-slider
                         discrete
@@ -2265,5 +2269,5 @@ const nn=re`.mdc-floating-label{-moz-osx-font-smoothing:grayscale;-webkit-font-s
      /* width:100%; */
      border-radius: 10px;
    }
-  `,r([we()],dn.prototype,"translation",void 0),r([we()],dn.prototype,"paragraphIndex",void 0),r([we()],dn.prototype,"fontSize",void 0),r([we()],dn.prototype,"feedback",void 0),r([Ee(".part")],dn.prototype,"partElements",void 0),r([Ee(".paragraph[selected] .source .part")],dn.prototype,"sourcePartElements",void 0),r([Ee(".paragraph")],dn.prototype,"paragraphElements",void 0),r([_e(".paragraph[selected] .source")],dn.prototype,"sourceElement",void 0),r([_e(".paragraph[selected] .source .part[conceal]")],dn.prototype,"nextConcealedPart",void 0),r([_e(".paragraph[selected] .translated")],dn.prototype,"translatedElement",void 0),r([_e("#feedback")],dn.prototype,"feedbackBox",void 0),r([_e("paste-box")],dn.prototype,"pasteBox",void 0),r([_e("loop-player")],dn.prototype,"loopPlayer",void 0),r([_e("search-manager")],dn.prototype,"searchManager",void 0),r([_e("context-menu")],dn.prototype,"contextMenu",void 0),r([_e("mwc-slider#speed-slider")],dn.prototype,"speedSlider",void 0),dn=r([be("app-container")],dn);export{dn as AppContainer};
+  `,r([we()],dn.prototype,"translation",void 0),r([we()],dn.prototype,"paragraphIndex",void 0),r([we()],dn.prototype,"fontSize",void 0),r([we()],dn.prototype,"feedback",void 0),r([we()],dn.prototype,"showTranslated",void 0),r([Ee(".part")],dn.prototype,"partElements",void 0),r([Ee(".paragraph[selected] .source .part")],dn.prototype,"sourcePartElements",void 0),r([Ee(".paragraph")],dn.prototype,"paragraphElements",void 0),r([_e(".paragraph[selected] .source")],dn.prototype,"sourceElement",void 0),r([_e(".paragraph[selected] .source .part[conceal]")],dn.prototype,"nextConcealedPart",void 0),r([_e(".paragraph[selected] .translated")],dn.prototype,"translatedElement",void 0),r([_e("#feedback")],dn.prototype,"feedbackBox",void 0),r([_e("paste-box")],dn.prototype,"pasteBox",void 0),r([_e("loop-player")],dn.prototype,"loopPlayer",void 0),r([_e("search-manager")],dn.prototype,"searchManager",void 0),r([_e("context-menu")],dn.prototype,"contextMenu",void 0),r([_e("mwc-slider#speed-slider")],dn.prototype,"speedSlider",void 0),dn=r([be("app-container")],dn);export{dn as AppContainer};
 //# sourceMappingURL=app.js.map
