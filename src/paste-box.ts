@@ -3,10 +3,12 @@ import { customElement, query, state } from 'lit/decorators.js'
 import '@material/mwc-dialog'
 import '@material/mwc-icon-button'
 import '@material/mwc-select'
+import '@material/mwc-textarea'
 import copy from '@vdegenne/clipboard-copy'
 import { Dialog } from '@material/mwc-dialog';
 import { Langs, Language, Translation } from './types'
 import { Select } from '@material/mwc-select'
+import { TextArea } from '@material/mwc-textarea'
 
 @customElement('paste-box')
 export class PasteBox extends LitElement {
@@ -14,6 +16,8 @@ export class PasteBox extends LitElement {
   @query('mwc-select') select!: Select;
   @query('textarea:nth-of-type(1)') sourceArea!: HTMLTextAreaElement;
   @query('textarea:nth-of-type(2)') translationArea!: HTMLTextAreaElement;
+
+  @query('mwc-textarea') importTextArea!: TextArea;
 
   static styles = css`
   mwc-select {
@@ -32,7 +36,7 @@ export class PasteBox extends LitElement {
   render() {
     return html`
     <mwc-dialog heading="Editing Box" style="--mdc-dialog-min-width:calc(100vw - 32px)">
-      <mwc-select name=lang .value=${Langs[0]} fixedMenuPosition>
+      <mwc-select name=lang fixedMenuPosition>
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
 
@@ -44,10 +48,22 @@ export class PasteBox extends LitElement {
         @click=${()=>{this.loadFromRemote()}}>remote</mwc-button>
       <mwc-button unelevated slot="secondaryAction" icon=file_copy
         @click=${()=>{this.copyData()}}>data</mwc-button>
+      <mwc-icon-button icon=save_alt slot=secondaryAction
+        @click=${()=>{(this.shadowRoot!.querySelector('#pasteboxDialog') as Dialog).show()}}></mwc-icon-button>
       <mwc-button outlined slot=secondaryAction dialogAction=close>close</mwc-button>
       <mwc-button unelevated slot="primaryAction"
         ?disabled=${!this.submitable}
         @click=${()=>{this.submit()}}>submit</mwc-button>
+    </mwc-dialog>
+
+
+    <mwc-dialog id=pasteboxDialog heading="Paste box">
+      <mwc-textarea
+        rows=12
+        style="width:100%;"
+      ></mwc-textarea>
+      <mwc-button unelevated slot="primaryAction" dialogAction=close
+        @click=${()=>{this.load(JSON.parse(this.importTextArea.value))}}>import</mwc-button>
     </mwc-dialog>
     `
   }

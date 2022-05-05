@@ -48,7 +48,7 @@ export class AppContainer extends LitElement {
   @state() paragraphIndex = 0
   @state() fontSize = 28;
   @state() feedback: HTMLTemplateResult = html``;
-  @state() showTranslated = false
+  @state() showTranslated = true
 
   private _playbackRate = .7
 
@@ -154,7 +154,7 @@ export class AppContainer extends LitElement {
       padding: 10px;
       box-sizing: border-box;
     }
-    
+
    .slider-popbox {
      background-color: #e0e0e0;
      position: absolute;
@@ -197,7 +197,7 @@ export class AppContainer extends LitElement {
                 font-size: ${this.fontSize}px !important;
             }
         </style>
-        
+
     <header>
       <div id=feedback>${this.feedback}</div>
         <!-- <mwc-icon-button icon="search"
@@ -228,7 +228,7 @@ export class AppContainer extends LitElement {
              ${paragraph.map(part => html`<span class=part ?conceal=${part !== ' '}>${part}</span>`)}
            </div>
            <hr style="margin: 0">
-           <div class=translated 
+           <div class=translated
                 ?conceal=${!this.showTranslated}
                 @click=${()=>{speakEnglish(translatedParagraph)}}>${translatedParagraph}</div>
          </div>
@@ -238,7 +238,7 @@ export class AppContainer extends LitElement {
       }
     </div>
 
-        
+
         <div id=paragraph-controls>
         ${this.translation && _parts.length > 1 ? html`
             <div style="display: flex;align-items: center;justify-content: center;width: 100%">
@@ -264,7 +264,7 @@ export class AppContainer extends LitElement {
                                          this.openSearchManager()
                                      }
                                  }}></mwc-icon-button>
-                
+
                 <!-- SPEED ADJUSTMENT -->
                 <div class="slider-popbox" hide>
                     <mwc-slider
@@ -280,10 +280,10 @@ export class AppContainer extends LitElement {
                 </div>
                 <mwc-icon-button icon="speed"
                     @click=${(e)=>{e.target.previousElementSibling.toggleAttribute('hide')}}></mwc-icon-button>
-                
+
                 <mwc-icon-button icon="${this.showTranslated ? 'subtitles' : 'subtitles_off'}"
                     @click=${()=>{this.showTranslated=!this.showTranslated}}></mwc-icon-button>
-                
+
                 <mwc-slider
                         discrete
                         withTickMarks
@@ -300,7 +300,7 @@ export class AppContainer extends LitElement {
     <paste-box></paste-box>
 
     <search-manager></search-manager>
-        
+
         <context-menu></context-menu>
     `
   }
