@@ -2110,7 +2110,7 @@ const dn=re`.mdc-text-field{height:100%}.mdc-text-field__input{resize:none}`
  * SPDX-License-Identifier: Apache-2.0
  */;let fn=class extends cn{};fn.styles=[vr,dn],fn=r([be("mwc-textarea")],fn);const pn=["Japanese","Korean","French"];let un=class extends he{render(){return L`
     <mwc-dialog heading="Editing Box" style="--mdc-dialog-min-width:calc(100vw - 32px)">
-      <mwc-select name=lang fixedMenuPosition>
+      <mwc-select name=lang fixedMenuPosition value="Japanese">
         ${pn.map((e=>L`<mwc-list-item value=${e}>${e}</mwc-list-item>`))}
       </mwc-select>
 
@@ -2139,18 +2139,18 @@ const dn=re`.mdc-text-field{height:100%}.mdc-text-field__input{resize:none}`
       <mwc-button unelevated slot="primaryAction" dialogAction=close
         @click=${()=>{this.load(JSON.parse(this.importTextArea.value))}}>import</mwc-button>
     </mwc-dialog>
-    `}get submitable(){return this.translationArea&&this.translationArea.value&&this.sourceArea.value}get translation(){return{lang:this.select.value,translated:this.translationArea.value,source:this.sourceArea.value}}submit(){this.submitable&&(this.dispatchEvent(new CustomEvent("upload",{composed:!0,detail:{translation:this.translation}})),this.dialog.close())}copyData(){!function(e){if(navigator.clipboard)return navigator.clipboard.writeText(e).catch((function(e){throw void 0!==e?e:new DOMException("The request is not allowed","NotAllowedError")}));var t=document.createElement("span");t.textContent=e,t.style.whiteSpace="pre",document.body.appendChild(t);var o=window.getSelection(),r=window.document.createRange();o.removeAllRanges(),r.selectNode(t),o.addRange(r);var i=!1;try{i=window.document.execCommand("copy")}catch(e){console.log("error",e)}o.removeAllRanges(),window.document.body.removeChild(t),i?Promise.resolve():Promise.reject(new DOMException("The request is not allowed","NotAllowedError"))}(JSON.stringify(this.translation)),window.toast("data copied to clipboard")}open(){this.dialog.show()}async loadFromRemote(){const e=await fetch("./data.json"),t=await e.json();t&&this.load(t)}load(e){this.select.value=e.lang,this.sourceArea.value=e.source,this.translationArea.value=e.translated,this.requestUpdate()}};un.styles=re`
-  mwc-select {
-    width: 100%;
-  }
-  textarea {
-    display: block;
-    width: 100%;
-    resize: vertical;
-    box-sizing: border-box;
-    min-height: 200px;
-    margin: 12px 0;
-  }
+    `}firstUpdated(e){this.loadFromLocal()}get submitable(){return this.translationArea&&this.translationArea.value&&this.sourceArea.value}get translation(){return{lang:this.select.value,translated:this.translationArea.value,source:this.sourceArea.value}}submit(){this.submitable&&(this.dispatchEvent(new CustomEvent("upload",{composed:!0,detail:{translation:this.translation}})),this.saveToLocalStorage(),this.dialog.close())}load(e){this.select.value=e.lang,this.sourceArea.value=e.source,this.translationArea.value=e.translated,this.requestUpdate()}async loadFromRemote(){const e=await fetch("./data.json"),t=await e.json();t&&this.load(t)}loadFromLocal(){let e=localStorage.getItem("translation-practice:translation");null!=e&&(e=JSON.parse(e),this.load(e),this.submit())}saveToLocalStorage(){localStorage.setItem("translation-practice:translation",JSON.stringify(this.translation))}show(){this.dialog.show()}copyData(){!function(e){if(navigator.clipboard)return navigator.clipboard.writeText(e).catch((function(e){throw void 0!==e?e:new DOMException("The request is not allowed","NotAllowedError")}));var t=document.createElement("span");t.textContent=e,t.style.whiteSpace="pre",document.body.appendChild(t);var o=window.getSelection(),r=window.document.createRange();o.removeAllRanges(),r.selectNode(t),o.addRange(r);var i=!1;try{i=window.document.execCommand("copy")}catch(e){console.log("error",e)}o.removeAllRanges(),window.document.body.removeChild(t),i?Promise.resolve():Promise.reject(new DOMException("The request is not allowed","NotAllowedError"))}(JSON.stringify(this.translation)),window.toast("data copied to clipboard")}};un.styles=re`
+    mwc-select {
+      width: 100%;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      resize: vertical;
+      box-sizing: border-box;
+      min-height: 200px;
+      margin: 12px 0;
+    }
   `,r([_e("mwc-dialog")],un.prototype,"dialog",void 0),r([_e("mwc-select")],un.prototype,"select",void 0),r([_e("textarea:nth-of-type(1)")],un.prototype,"sourceArea",void 0),r([_e("textarea:nth-of-type(2)")],un.prototype,"translationArea",void 0),r([_e("mwc-textarea")],un.prototype,"importTextArea",void 0),un=r([be("paste-box")],un);let mn=class extends he{constructor(){super(...arguments),this.paragraphIndex=0,this.fontSize=28,this.feedback=L``,this.showTranslated=!0,this._playbackRate=.7}get sourceContent(){var e;return null===(e=this.translation)||void 0===e?void 0:e.source.split("\n").filter((e=>e))[this.paragraphIndex]}get visibleSourceContent(){const e=[];for(const t of this.sourcePartElements){if(t.hasAttribute("conceal"))break;e.push(t)}return e.map((e=>e.textContent)).join("")}get hasMoreTranslation(){return this.paragraphIndex+1!=this.paragraphElements.length}get selection(){var e;return null===(e=document.getSelection())||void 0===e?void 0:e.toString()}render(){let e;if(this.translation){let t=this.translation.source.split("\n").filter((e=>e));switch(this.translation.lang){case"French":e=t.map((e=>e.replace(/\ /g," <space> ").split(" ").map((e=>"<space>"==e?" ":e))));break;case"Japanese":case"Korean":e=t.map((e=>e.split("")))}}return L`
         <style>
             .paragraph {
@@ -2167,7 +2167,7 @@ const dn=re`.mdc-text-field{height:100%}.mdc-text-field__input{resize:none}`
         <mwc-icon-button icon="casino"
             @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
       <mwc-icon-button icon=settings
-                       @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
+                       @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
         <mwc-icon-button
                 @click=${()=>{window.open("https://github.com/vdegenne/translation-analyzer/tree/master/docs","_blank")}}>
             <img src="./img/github.ico">
@@ -2248,7 +2248,7 @@ const dn=re`.mdc-text-field{height:100%}.mdc-text-field__input{resize:none}`
     <search-manager></search-manager>
 
         <context-menu></context-menu>
-    `}updated(e){this.shadowRoot.querySelector("mwc-slider").layout(),super.updated(e)}async firstUpdated(e){let t,o=!1;this.addEventListener("upload",(e=>this.load(e.detail.translation))),window.addEventListener("contextmenu",(e=>{2==e.button&&e.preventDefault()})),this.addEventListener("mousedown",(e=>{if(2==e.button)return void((this.selection||this.contextMenu.value)&&(this.contextMenu.moveMenuTo(e.x,e.y),this.contextMenu.show(this.selection)));const t=e.composedPath()[0];if(this.speedSlider.parentElement.hasAttribute("hide"))o=!0,t.classList.contains("part")&&t.hasAttribute("conceal")&&this.speakNextPart(),0!=e.button||!["app","translations"].includes(t.id)||this.selection||this.contextMenu.open||this.speakNextPart();else{if("speed-slider"==t.id)return;setTimeout((()=>this.speedSlider.parentElement.setAttribute("hide","")),100)}})),this.addEventListener("mouseup",(e=>o=!1)),window.addEventListener("keydown",(e=>{if(!this.searchManager.open){if("KeyS"==e.code&&this.speakSource(),"Digit1"==e.code){const e=this.selection;e&&this.searchManager.show(e,"words")}"KeyA"==e.code&&this.selection&&Oo(this.selection),"KeyE"==e.code&&this.translatedElement.click(),"Space"==e.code&&(e.preventDefault(),this.speakNextPart()),"ArrowLeft"!=e.code&&"KeyA"!=e.code||this.shadowRoot.querySelector("[icon=arrow_back]").click(),"ArrowRight"!=e.code&&"KeyD"!=e.code||this.shadowRoot.querySelector("[icon=arrow_forward]").click()}})),this.pasteBox.loadFromRemote().then((()=>{this.pasteBox.submit()})),setInterval((()=>{const e=this.selection;if(!o&&e&&0!=e.length&&e!=t){const o=this.searchManager.searchData(e,["words"]).filter((e=>"not found"!=e.dictionary));o.length&&(this.feedback=L`<mwc-button
+    `}updated(e){this.shadowRoot.querySelector("mwc-slider").layout(),super.updated(e)}async firstUpdated(e){let t,o=!1;this.addEventListener("upload",(e=>this.load(e.detail.translation))),window.addEventListener("contextmenu",(e=>{2==e.button&&e.preventDefault()})),this.addEventListener("mousedown",(e=>{if(2==e.button)return void((this.selection||this.contextMenu.value)&&(this.contextMenu.moveMenuTo(e.x,e.y),this.contextMenu.show(this.selection)));const t=e.composedPath()[0];if(this.speedSlider.parentElement.hasAttribute("hide"))o=!0,t.classList.contains("part")&&t.hasAttribute("conceal")&&this.speakNextPart(),0!=e.button||!["app","translations"].includes(t.id)||this.selection||this.contextMenu.open||this.speakNextPart();else{if("speed-slider"==t.id)return;setTimeout((()=>this.speedSlider.parentElement.setAttribute("hide","")),100)}})),this.addEventListener("mouseup",(e=>o=!1)),window.addEventListener("keydown",(e=>{if(!this.searchManager.open){if("KeyS"==e.code&&this.speakSource(),"Digit1"==e.code){const e=this.selection;e&&this.searchManager.show(e,"words")}"KeyA"==e.code&&this.selection&&Oo(this.selection),"KeyE"==e.code&&this.translatedElement.click(),"Space"==e.code&&(e.preventDefault(),this.speakNextPart()),"ArrowLeft"!=e.code&&"KeyA"!=e.code||this.shadowRoot.querySelector("[icon=arrow_back]").click(),"ArrowRight"!=e.code&&"KeyD"!=e.code||this.shadowRoot.querySelector("[icon=arrow_forward]").click()}})),setInterval((()=>{const e=this.selection;if(!o&&e&&0!=e.length&&e!=t){const o=this.searchManager.searchData(e,["words"]).filter((e=>"not found"!=e.dictionary));o.length&&(this.feedback=L`<mwc-button
                   outlined
                   @click=${()=>{window.app.searchManager.show(o[0].word)}}
                   style='--mdc-typography-button-font-family: "Shippori Mincho", serif;--mdc-typography-button-font-size:18px;'

@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit'
+import { css, html, LitElement, PropertyValueMap } from 'lit'
 import { customElement, query, state } from 'lit/decorators.js'
 import '@material/mwc-dialog'
 import '@material/mwc-icon-button'
@@ -12,31 +12,40 @@ import { TextArea } from '@material/mwc-textarea'
 
 @customElement('paste-box')
 export class PasteBox extends LitElement {
+
+  /**
+   * Queries
+   */
   @query('mwc-dialog') dialog!: Dialog;
   @query('mwc-select') select!: Select;
   @query('textarea:nth-of-type(1)') sourceArea!: HTMLTextAreaElement;
   @query('textarea:nth-of-type(2)') translationArea!: HTMLTextAreaElement;
-
   @query('mwc-textarea') importTextArea!: TextArea;
 
+  /**
+   * STYLES
+   */
   static styles = css`
-  mwc-select {
-    width: 100%;
-  }
-  textarea {
-    display: block;
-    width: 100%;
-    resize: vertical;
-    box-sizing: border-box;
-    min-height: 200px;
-    margin: 12px 0;
-  }
+    mwc-select {
+      width: 100%;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      resize: vertical;
+      box-sizing: border-box;
+      min-height: 200px;
+      margin: 12px 0;
+    }
   `
 
+  /**
+   * RENDER
+   */
   render() {
     return html`
     <mwc-dialog heading="Editing Box" style="--mdc-dialog-min-width:calc(100vw - 32px)">
-      <mwc-select name=lang fixedMenuPosition>
+      <mwc-select name=lang fixedMenuPosition value="Japanese">
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
 
@@ -68,10 +77,23 @@ export class PasteBox extends LitElement {
     `
   }
 
+  /**
+   * First updated
+   */
+  protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    this.loadFromLocal()
+  }
+
+  /**
+   * Is the form submitable?
+   */
   get submitable () {
     return this.translationArea && this.translationArea.value && this.sourceArea.value
   }
 
+  /**
+   * Request the data on the interface as a translation
+   */
   get translation (): Translation {
     return {
       lang: this.select.value as Language,
@@ -80,6 +102,9 @@ export class PasteBox extends LitElement {
     }
   }
 
+  /**
+   * Submit the data from the interface in an event
+   */
   submit () {
     if (!this.submitable) return
 
@@ -90,18 +115,24 @@ export class PasteBox extends LitElement {
       }
     }))
 
+    this.saveToLocalStorage()
+
     this.dialog.close()
   }
 
-  copyData() {
-    copy(JSON.stringify(this.translation))
-    window.toast('data copied to clipboard')
+  /**
+   * Load a translation on the interface
+   */
+  load(translation: Translation) {
+    this.select.value = translation.lang
+    this.sourceArea.value = translation.source
+    this.translationArea.value = translation.translated
+    this.requestUpdate()
   }
 
-  open () {
-    this.dialog.show()
-  }
-
+  /**
+   * Load the remote data and load it into the interface
+   */
   async loadFromRemote() {
     const response = await fetch('./data.json')
     const translation=await response.json() as Translation
@@ -110,10 +141,37 @@ export class PasteBox extends LitElement {
     }
   }
 
-  load(translation: Translation) {
-    this.select.value = translation.lang
-    this.sourceArea.value = translation.source
-    this.translationArea.value = translation.translated
-    this.requestUpdate()
+  /**
+   * Load translation from the local storage
+   */
+  loadFromLocal () {
+    let localData: string|Translation|null = localStorage.getItem('translation-practice:translation')
+    if (localData != null) {
+      localData = JSON.parse(localData) as Translation
+      this.load(localData)
+      this.submit()
+    }
+  }
+
+  /**
+   * Save translation to localStorage
+   */
+  saveToLocalStorage() {
+    localStorage.setItem('translation-practice:translation', JSON.stringify(this.translation))
+  }
+
+  /**
+   * Show the dialog
+   */
+  show () {
+    this.dialog.show()
+  }
+
+  /**
+   * Copy the translation from the interface into the clipboard
+   */
+  copyData() {
+    copy(JSON.stringify(this.translation))
+    window.toast('data copied to clipboard')
   }
 }

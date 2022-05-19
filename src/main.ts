@@ -209,7 +209,7 @@ export class AppContainer extends LitElement {
         <mwc-icon-button icon="casino"
             @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
       <mwc-icon-button icon=settings
-                       @click=${()=>{this.pasteBox.open()}}></mwc-icon-button>
+                       @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
         <mwc-icon-button
                 @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
             <img src="./img/github.ico">
@@ -390,9 +390,9 @@ export class AppContainer extends LitElement {
     // window.addEventListener('pointerdown', (e) => {
     // })
 
-    this.pasteBox.loadFromRemote().then(() => {
-      this.pasteBox.submit()
-    })
+    // this.pasteBox.loadFromRemote().then(() => {
+    //   this.pasteBox.submit()
+    // })
 
 
     /******************
