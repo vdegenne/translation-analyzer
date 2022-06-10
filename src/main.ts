@@ -27,7 +27,7 @@ import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {getRandomWord, SearchManager} from "./search-manager";
-import {googleImageSearch, playJapaneseAudio, ringTheBell} from './util'
+import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, ringTheBell} from './util'
 import {cancelSpeech, speak, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
@@ -171,7 +171,7 @@ export class AppContainer extends LitElement {
   }
 
   render () {
-    // console.log('rendered')
+    console.log(this.paragraphIndex)
     // let translation, _parts;
     let _parts;
     if (this.translation) {
@@ -301,7 +301,7 @@ export class AppContainer extends LitElement {
 
     <search-manager></search-manager>
 
-        <context-menu></context-menu>
+    <context-menu></context-menu>
     `
   }
 
@@ -368,9 +368,34 @@ export class AppContainer extends LitElement {
         }
       }
       if (e.code=='KeyA') {
-        if (this.selection)
-          googleImageSearch(this.selection)
+        const selection = this.selection || (this.contextMenu.open && this.contextMenu.value)
+        if (selection) {
+          googleImageSearch(selection)
+          return
+        }
       }
+      if (e.code == 'KeyG') {
+        const selection = this.selection || (this.contextMenu.open && this.contextMenu.value)
+        if (selection) {
+          jisho(selection)
+          return
+        }
+      }
+      if (e.code == 'KeyH') {
+        const selection = this.selection || (this.contextMenu.open && this.contextMenu.value)
+        if (selection) {
+          mdbg(selection)
+          return
+        }
+      }
+      if (e.code == 'KeyN') {
+        const selection = this.selection || (this.contextMenu.open && this.contextMenu.value)
+        if (selection) {
+          naver(selection)
+          return
+        }
+      }
+
       if (e.code=='KeyE') {
         this.translatedElement.click()
       }
@@ -420,17 +445,32 @@ export class AppContainer extends LitElement {
 
     /** decimal values **/
     this.speedSlider.valueToValueIndicatorTransform = (A) => ''+(A/100)
+    this.loadPageIndex()
   }
 
   previousPage () {
     if (this.paragraphIndex - 1 !== -1) {
-      this.paragraphIndex--
+      this.paragraphIndex--;
+      this.savePageIndex()
     }
   }
   nextPage () {
     if (this.paragraphIndex + 1 !== this.paragraphElements.length) {
-      this.paragraphIndex++
+      this.paragraphIndex++;
+      this.savePageIndex()
     }
+  }
+  firstPage () {
+    this.paragraphIndex = 0
+    this.savePageIndex()
+  }
+  loadPageIndex () {
+    let index = localStorage.getItem('translation-practice:paragraphIndex')
+    this.paragraphIndex = index ? parseInt(index) : 0;
+    console.log(this.paragraphIndex)
+  }
+  savePageIndex () {
+    localStorage.setItem('translation-practice:paragraphIndex', ''+this.paragraphIndex)
   }
 
   revealNextPart () {
@@ -502,7 +542,6 @@ export class AppContainer extends LitElement {
       return
     }
     this.translation = translation;
-    this.paragraphIndex = 0
     await this.updateComplete
     this.concealAllParts()
     return

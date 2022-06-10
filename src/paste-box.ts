@@ -116,6 +116,7 @@ export class PasteBox extends LitElement {
     }))
 
     this.saveToLocalStorage()
+    window.app.firstPage()
 
     this.dialog.close()
   }
@@ -149,7 +150,7 @@ export class PasteBox extends LitElement {
     if (localData != null) {
       localData = JSON.parse(localData) as Translation
       this.load(localData)
-      this.submit()
+      window.app.load(localData)
     }
   }
 
