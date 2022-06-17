@@ -9,9 +9,13 @@ import { Dialog } from '@material/mwc-dialog';
 import { Langs, Language, Translation } from './types'
 import { Select } from '@material/mwc-select'
 import { TextArea } from '@material/mwc-textarea'
+import '@material/mwc-switch'
 
 @customElement('paste-box')
 export class PasteBox extends LitElement {
+
+  @state()
+  playAudioOnPartReveal;
 
   /**
    * Queries
@@ -21,6 +25,7 @@ export class PasteBox extends LitElement {
   @query('textarea:nth-of-type(1)') sourceArea!: HTMLTextAreaElement;
   @query('textarea:nth-of-type(2)') translationArea!: HTMLTextAreaElement;
   @query('mwc-textarea') importTextArea!: TextArea;
+
 
   /**
    * STYLES
@@ -37,6 +42,9 @@ export class PasteBox extends LitElement {
       min-height: 200px;
       margin: 12px 0;
     }
+    mwc-formfield {
+      margin: 12px 0;
+    }
   `
 
   /**
@@ -44,25 +52,33 @@ export class PasteBox extends LitElement {
    */
   render() {
     return html`
-    <mwc-dialog heading="Editing Box" style="--mdc-dialog-min-width:calc(100vw - 32px)">
+    <mwc-dialog heading="Settings" style="--mdc-dialog-min-width:calc(100vw - 32px)" open>
       <mwc-select name=lang fixedMenuPosition value="Japanese">
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
 
       <textarea @keyup=${()=>this.requestUpdate()}></textarea>
-
       <textarea @keyup=${()=>this.requestUpdate()}></textarea>
+
+      <mwc-formfield label="Play audio on part reveal">
+        <mwc-switch ?selected=${this.playAudioOnPartReveal}
+          @click=${(e)=>{this.playAudioOnPartReveal=e.target.selected}}></mwc-switch>
+      </mwc-formfield>
 
       <mwc-button unelevated slot="secondaryAction" icon=download
         @click=${()=>{this.loadFromRemote()}}>remote</mwc-button>
-      <mwc-button unelevated slot="secondaryAction" icon=file_copy
-        @click=${()=>{this.copyData()}}>data</mwc-button>
-      <mwc-icon-button icon=save_alt slot=secondaryAction
-        @click=${()=>{(this.shadowRoot!.querySelector('#pasteboxDialog') as Dialog).show()}}></mwc-icon-button>
-      <mwc-button outlined slot=secondaryAction dialogAction=close>close</mwc-button>
-      <mwc-button unelevated slot="primaryAction"
+      <mwc-button unelevated slot="secondaryAction"
+          @click=${()=>{this.copyData()}}>
+        <mwc-icon>file_copy</mwc-icon>
+      </mwc-button>
+      <mwc-button slot=secondaryAction
+          @click=${()=>{(this.shadowRoot!.querySelector('#pasteboxDialog') as Dialog).show()}}>
+        <mwc-icon>save_alt</mwc-icon>
+      </mwc-button>
+      <mwc-button unelevated slot="secondaryAction"
         ?disabled=${!this.submitable}
         @click=${()=>{this.submit()}}>submit</mwc-button>
+      <mwc-button outlined slot=primaryAction dialogAction=close>close</mwc-button>
     </mwc-dialog>
 
 
@@ -77,10 +93,17 @@ export class PasteBox extends LitElement {
     `
   }
 
+  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    if (_changedProperties.has('playAudioOnPartReveal')) {
+      this.saveOptions()
+    }
+  }
+
   /**
    * First updated
    */
   protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    this.loadOptions()
     this.loadFromLocal()
   }
 
@@ -174,5 +197,26 @@ export class PasteBox extends LitElement {
   copyData() {
     copy(JSON.stringify(this.translation))
     window.toast('data copied to clipboard')
+  }
+
+
+  loadOptions () {
+    let options
+    let localOptions = localStorage.getItem('translation-practice:options')
+    if (localOptions) {
+      options = JSON.parse(localOptions)
+    }
+    else {
+      options = {
+        playAudioOnPartReveal: true
+      }
+    }
+
+    this.playAudioOnPartReveal = options.playAudioOnPartReveal
+  }
+  saveOptions () {
+    localStorage.setItem('translation-practice:options', JSON.stringify({
+      playAudioOnPartReveal: this.playAudioOnPartReveal
+    }))
   }
 }

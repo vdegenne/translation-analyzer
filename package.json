@@ -9,6 +9,7 @@
     "@material/mwc-select": "^0.25.3",
     "@material/mwc-slider": "^0.25.3",
     "@material/mwc-snackbar": "^0.25.3",
+    "@material/mwc-switch": "^0.25.3",
     "@material/mwc-tab-bar": "^0.25.3",
     "@material/mwc-textarea": "^0.25.3",
     "@material/mwc-textfield": "^0.25.3",
@@ -26,9 +27,7 @@
   "scripts": {
     "build": "rollup -c --environment minify",
     "watch": "rollup -cw",
-    "watch:server": "pm2 start pm2.config.js",
-    "browser-sync:static": "browser-sync docs . --files docs/app.js --no-notify",
-    "browser-sync": "browser-sync start --proxy http://localhost:%port%/ --files docs/app.js --no-notify",
+    "browser-sync": "browser-sync docs . --files docs/app.js --no-notify --no-open",
     "deploy": "git add . && git commit -m \"$(./fruit.js)\" && git push",
     "buildeploy": "npm run build && npm run deploy; ./beep.bat"
   },

@@ -27,8 +27,8 @@ import './paste-box'
 import { PasteBox } from './paste-box'
 import { Translation } from './types'
 import {getRandomWord, SearchManager} from "./search-manager";
-import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, ringTheBell} from './util'
-import {cancelSpeech, speak, speakEnglish, speakJapanese} from "./speech";
+import {cancelAudio, googleImageSearch, isPlayingAudio, jisho, mdbg, naver, playJapaneseAudio, ringTheBell, speak} from './util'
+import {cancelSpeech, speakEnglish, speakJapanese} from "./speech";
 import {IconButton} from "@material/mwc-icon-button";
 import {isFullJapanese} from "asian-regexps";
 import { ContextMenu } from './context-menu'
@@ -171,7 +171,7 @@ export class AppContainer extends LitElement {
   }
 
   render () {
-    console.log(this.paragraphIndex)
+    // console.log(this.paragraphIndex)
     // let translation, _parts;
     let _parts;
     if (this.translation) {
@@ -252,8 +252,8 @@ export class AppContainer extends LitElement {
             </div>
         ` : nothing }
             <div style="display: flex;align-items: center;position: relative">
-                <mwc-icon-button icon="remove_red_eye"
-                                 @click=${()=>{this.speakNextPart()}}></mwc-icon-button>
+                <!-- <mwc-icon-button icon="remove_red_eye"
+                                 @click=${()=>{this.speakNextPart()}}></mwc-icon-button> -->
                 <mwc-icon-button icon=volume_up @click=${()=>{this.speakSource()}}></mwc-icon-button>
                 <mwc-icon-button icon=search
                                  @click=${(e) => {
@@ -343,13 +343,15 @@ export class AppContainer extends LitElement {
 
       // if we've clicked on a part
       if (target.classList.contains('part') && target.hasAttribute('conceal')) {
-        this.speakNextPart()
+        this.revealNextPart()
+        // this.speakNextPart()
         // this.onParagraphClick()
       }
 
       // if we've click in the back
       if (e.button==0 && ['app', 'translations'].includes(target.id) && !this.selection && !this.contextMenu.open) {
-        this.speakNextPart()
+        this.revealNextPart()
+        // this.speakNextPart()
         // this.onParagraphClick()
       }
     })
@@ -359,7 +361,19 @@ export class AppContainer extends LitElement {
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
       if (e.code == 'KeyS') {
-        this.speakSource()
+        // if playing we should stop
+        if (isPlayingAudio()) {
+          cancelAudio()
+        }
+        else {
+          // else we play
+          if (this.selection) {
+            this.speakSelection()
+          }
+          else {
+            this.speakSource()
+          }
+        }
       }
       if (e.code == 'Digit1') {
         const selection = this.selection
@@ -402,7 +416,8 @@ export class AppContainer extends LitElement {
 
       if (e.code == 'Space') {
         e.preventDefault()
-        this.speakNextPart()
+        this.revealNextPart()
+        // this.speakNextPart()
       }
 
       if (e.code=='ArrowLeft' || e.code=='KeyA') {
@@ -467,27 +482,35 @@ export class AppContainer extends LitElement {
   loadPageIndex () {
     let index = localStorage.getItem('translation-practice:paragraphIndex')
     this.paragraphIndex = index ? parseInt(index) : 0;
-    console.log(this.paragraphIndex)
+    // console.log(this.paragraphIndex)
   }
   savePageIndex () {
     localStorage.setItem('translation-practice:paragraphIndex', ''+this.paragraphIndex)
   }
 
-  revealNextPart () {
+  async revealNextPart (speak = undefined) {
     const nextConcealedPart = this.nextConcealedPart
     if (nextConcealedPart) {
       nextConcealedPart.removeAttribute('conceal')
+      if (speak == true || (speak == undefined && this.pasteBox.playAudioOnPartReveal == true)) {
+        await this.speakSource()
+      }
     }
   }
 
-  async speakSource (selectionPriority= true) {
-    // play selection or all
-    let text = this.selection
-    if (!selectionPriority || text == '') {
-      text = this.visibleSourceContent
-      // text = [...this.sourceElement.querySelectorAll('.part:not([hide])')].map(el=>el.textContent!.trim()).join('')
+  async speakSelection () {
+    if (this.selection) {
+      try {
+        await speak(this.selection, this._playbackRate)
+      } catch (e) {
+        return
+      }
     }
-    // play everything if no selection and no part is revealed
+  }
+
+  async speakSource () {
+    // play selection or all
+    let text = this.visibleSourceContent
     if (!text) {
       text = this.sourceContent
     }
@@ -496,7 +519,7 @@ export class AppContainer extends LitElement {
     try {
       if (!text) { throw new Error() }
       // @TODO : the function here should throw if it was intentionally stopped
-      await this.speak(text)
+      await speak(text, this._playbackRate)
     } catch (e) {
       return
     }
@@ -507,31 +530,11 @@ export class AppContainer extends LitElement {
     }
   }
 
-  async speak (text:string, rate = this._playbackRate) {
-    if (isFullJapanese(text)) {
-      // is the selection in the words
-      const result = this.searchManager.searchData(text).filter(s=>s.type=='words' && s.exactSearch && s.dictionary !== 'not found')
-      // if (result.length) {
-        try {
-          if (result.length == 0 || text.length > 6) {
-            throw new Error(); // intentionally triggering an exception to call the rollback speaker
-          }
-          await playJapaneseAudio(result.length ? (result[0].hiragana || result[0].word) : text)
-        } catch (e) {
-          cancelSpeech() // cancel in case a speech is alredy playing
-          await speakJapanese(result.length ? (result[0].hiragana || result[0].word) : text, 1, rate)
-        }
-      // }
-      // else {
-      //   speakJapanese(text)
-      // }
-    }
-  }
 
-  async speakVisibleSource () {
-    // console.log(this.visibleSourceContent)
-    this.speakSource(false) // play the visible source without selection matter
-  }
+  // async speakVisibleSource () {
+  //   // console.log(this.visibleSourceContent)
+  //   this.speakSource(false) // play the visible source without selection matter
+  // }
 
   async speakTranslatedParagraph () {
     await speakEnglish(this.translatedElement.textContent!)
@@ -620,11 +623,11 @@ export class AppContainer extends LitElement {
     }
   }
 
-  public async speakNextPart() {
-    // window.getSelection()?.removeAllRanges()
-    this.revealNextPart()
-    await this.speakSource(false)
-  }
+  // public async speakNextPart() {
+  //   // window.getSelection()?.removeAllRanges()
+  //   this.revealNextPart()
+  //   await this.speakSource(false)
+  // }
 
   private async onCasinoButtonClick() {
     // pick a random word
