@@ -34,6 +34,7 @@ import {isFullJapanese} from "asian-regexps";
 import { ContextMenu } from './context-menu'
 import {LoopPlayer} from "./loop-player";
 import {Slider} from "@material/mwc-slider";
+import { ControllerController } from './ControllerController'
 
 declare global {
   interface Window {
@@ -51,6 +52,7 @@ export class AppContainer extends LitElement {
   @state() showTranslated = true
 
   private _playbackRate = .7
+  private controllerController = new ControllerController(this)
 
   //
   @queryAll('.part') partElements!: HTMLSpanElement[];
@@ -62,7 +64,6 @@ export class AppContainer extends LitElement {
   @query('.paragraph[selected] .source .part[conceal]') nextConcealedPart!: HTMLSpanElement;
   @query('.paragraph[selected] .translated') translatedElement!: HTMLDivElement;
 
-  // @query('.paragraph[selected] mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
 
   @query('#feedback') feedbackBox!: HTMLDivElement;
   @query('paste-box') pasteBox!: PasteBox;
@@ -70,6 +71,10 @@ export class AppContainer extends LitElement {
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
   @query('mwc-slider#speed-slider') speedSlider!: Slider;
+  @query('mwc-icon-button[icon="casino"]') casinoButton!: IconButton;
+  @query('mwc-icon-button[icon="arrow_back"]') arrowBackButton!: IconButton;
+  @query('mwc-icon-button[icon="arrow_forward"]') arrowForwardButton!: IconButton;
+  @query('mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
 
 
   get sourceContent (): string {
@@ -254,7 +259,7 @@ export class AppContainer extends LitElement {
             <div style="display: flex;align-items: center;position: relative">
                 <!-- <mwc-icon-button icon="remove_red_eye"
                                  @click=${()=>{this.speakNextPart()}}></mwc-icon-button> -->
-                <mwc-icon-button icon=volume_up @click=${()=>{this.speakSource()}}></mwc-icon-button>
+                <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakButtonClick()}}></mwc-icon-button>
                 <mwc-icon-button icon=search
                                  @click=${(e) => {
                                      if (this.selection) {
@@ -303,6 +308,22 @@ export class AppContainer extends LitElement {
 
     <context-menu></context-menu>
     `
+  }
+
+  onSpeakButtonClick() {
+    // if playing we should stop
+    if (isPlayingAudio()) {
+      cancelAudio()
+    }
+    else {
+      // else we play
+      if (this.selection) {
+        this.speakSelection()
+      }
+      else {
+        this.speakSource()
+      }
+    }
   }
 
   protected updated(_changedProperties: PropertyValues) {
@@ -361,19 +382,7 @@ export class AppContainer extends LitElement {
     window.addEventListener('keydown', e => {
       if (this.searchManager.open) { return }
       if (e.code == 'KeyS') {
-        // if playing we should stop
-        if (isPlayingAudio()) {
-          cancelAudio()
-        }
-        else {
-          // else we play
-          if (this.selection) {
-            this.speakSelection()
-          }
-          else {
-            this.speakSource()
-          }
-        }
+        this.speakButton.click()
       }
       if (e.code == 'Digit1') {
         const selection = this.selection

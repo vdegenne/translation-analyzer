@@ -52,7 +52,7 @@ export class PasteBox extends LitElement {
    */
   render() {
     return html`
-    <mwc-dialog heading="Settings" style="--mdc-dialog-min-width:calc(100vw - 32px)" open>
+    <mwc-dialog heading="Settings" style="--mdc-dialog-min-width:calc(100vw - 32px)">
       <mwc-select name=lang fixedMenuPosition value="Japanese">
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
