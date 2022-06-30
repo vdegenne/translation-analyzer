@@ -47,7 +47,7 @@ declare global {
 export class AppContainer extends LitElement {
   @state() translation?: Translation;
   @state() paragraphIndex = 0
-  @state() fontSize = 28;
+  @state() fontSize = 19;
   @state() feedback: HTMLTemplateResult = html``;
   @state() showTranslated = true
 
@@ -160,15 +160,15 @@ export class AppContainer extends LitElement {
       box-sizing: border-box;
     }
 
-   .slider-popbox {
-     background-color: #e0e0e0;
-     position: absolute;
-     top:-48px;
-     left: 24px;
-     right: 24px;
-     /* width:100%; */
-     border-radius: 10px;
-   }
+    .slider-popbox {
+      background-color: #e0e0e0;
+      position: absolute;
+      top:-48px;
+      left: 24px;
+      right: 24px;
+      /* width:100%; */
+      border-radius: 10px;
+    }
   `
 
   get selection () {
@@ -215,30 +215,30 @@ export class AppContainer extends LitElement {
             @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
       <mwc-icon-button icon=settings
                        @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
-        <mwc-icon-button
+        <!-- <mwc-icon-button
                 @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
             <img src="./img/github.ico">
-        </mwc-icon-button>
+        </mwc-icon-button> -->
     </header>
 
     <div id=translations>
       ${this.translation ? html`
-       <!-- for each paragraph -->
-       ${_parts.map((paragraph, i)=>{
-         // console.log(this.translation)
-         const translatedParagraph = this.translation!.translated.split('\n').filter(p=>p)[i]
-         return html`
-         <div class=paragraph ?selected=${this.paragraphIndex === i}>
-           <div class=source>
-             ${paragraph.map(part => html`<span class=part ?conceal=${part !== ' '}>${part}</span>`)}
-           </div>
-           <hr style="margin: 0">
-           <div class=translated
-                ?conceal=${!this.showTranslated}
-                @click=${()=>{speakEnglish(translatedParagraph)}}>${translatedParagraph}</div>
-         </div>
-       `
-       })}
+        <!-- for each paragraph -->
+        ${_parts.map((paragraph, i)=>{
+          // console.log(this.translation)
+          const translatedParagraph = this.translation!.translated.split('\n').filter(p=>p)[i]
+          return html`
+          <div class=paragraph ?selected=${this.paragraphIndex === i}>
+            <div class=source>
+              ${paragraph.map(part => html`<span class=part ?conceal=${part !== ' '}>${part}</span>`)}
+            </div>
+            <hr style="margin: 0">
+            <div class=translated
+              ?conceal=${!this.showTranslated}
+              @click=${()=>{speakEnglish(translatedParagraph)}}>${translatedParagraph}</div>
+          </div>
+        `
+        })}
       ` : nothing
       }
     </div>
@@ -246,7 +246,7 @@ export class AppContainer extends LitElement {
 
         <div id=paragraph-controls>
         ${this.translation && _parts.length > 1 ? html`
-            <div style="display: flex;align-items: center;justify-content: center;width: 100%">
+            <div style="display:flex;align-items:center;justify-content:flex-start;width: 100%">
               <mwc-icon-button icon=arrow_back
                   ?disabled=${this.paragraphIndex === 0}
                   @click=${()=>{this.previousPage()}}></mwc-icon-button>
@@ -257,18 +257,17 @@ export class AppContainer extends LitElement {
             </div>
         ` : nothing }
             <div style="display: flex;align-items: center;position: relative">
-                <!-- <mwc-icon-button icon="remove_red_eye"
-                                 @click=${()=>{this.speakNextPart()}}></mwc-icon-button> -->
                 <mwc-icon-button icon=volume_up @click=${()=>{this.onSpeakButtonClick()}}></mwc-icon-button>
                 <mwc-icon-button icon=search
-                                 @click=${(e) => {
-                                     if (this.selection) {
-                                         this.contextMenu.moveMenuTo(e.x, e.y)
-                                         this.contextMenu.show(this.selection)
-                                     } else {
-                                         this.openSearchManager()
-                                     }
-                                 }}></mwc-icon-button>
+                  @click=${(e) => {
+                    if (this.selection) {
+                      this.contextMenu.moveMenuTo(e.x, e.y)
+                      this.contextMenu.show(this.selection)
+                    } else {
+                      this.openSearchManager()
+                    }
+                  }}
+                ></mwc-icon-button>
 
                 <!-- SPEED ADJUSTMENT -->
                 <div class="slider-popbox" hide>

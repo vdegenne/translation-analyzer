@@ -10,12 +10,13 @@ import { Langs, Language, Translation } from './types'
 import { Select } from '@material/mwc-select'
 import { TextArea } from '@material/mwc-textarea'
 import '@material/mwc-switch'
+import { AppContainer } from './main'
 
 @customElement('paste-box')
 export class PasteBox extends LitElement {
 
-  @state()
-  playAudioOnPartReveal;
+  @state() darkMode;
+  @state() playAudioOnPartReveal;
 
   /**
    * Queries
@@ -31,6 +32,12 @@ export class PasteBox extends LitElement {
    * STYLES
    */
   static styles = css`
+    :host {
+      --mdc-theme-primary: black;
+      --mdc-theme-on-primary: white;
+      color: ;
+      /* --mdc-theme-surface: #212121; */
+    }
     mwc-select {
       width: 100%;
     }
@@ -53,6 +60,10 @@ export class PasteBox extends LitElement {
   render() {
     return html`
     <mwc-dialog heading="Settings" style="--mdc-dialog-min-width:calc(100vw - 32px)">
+      <mwc-formfield label="Dark Vision">
+        <mwc-switch ?selected=${this.darkMode}
+          @click=${(e)=>{this.darkMode=e.target.selected}}></mwc-switch>
+      </mwc-formfield>
       <mwc-select name=lang fixedMenuPosition value="Japanese">
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
@@ -95,6 +106,13 @@ export class PasteBox extends LitElement {
 
   protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
     if (_changedProperties.has('playAudioOnPartReveal')) {
+      this.saveOptions()
+    }
+    if (_changedProperties.has('darkMode')) {
+      // @ts-ignore
+      // this.getRootNode().host.requestUpdate()
+      if (this.darkMode) { document.body.setAttribute('dark', '') }
+      else { document.body.removeAttribute('dark')}
       this.saveOptions()
     }
   }
@@ -201,21 +219,23 @@ export class PasteBox extends LitElement {
 
 
   loadOptions () {
-    let options
-    let localOptions = localStorage.getItem('translation-practice:options')
-    if (localOptions) {
-      options = JSON.parse(localOptions)
-    }
-    else {
-      options = {
-        playAudioOnPartReveal: true
-      }
+    let options = {
+      /* defaults */
+      darkMode: false,
+      playAudioOnPartReveal: true
     }
 
+    let localOptions = localStorage.getItem('translation-practice:options')
+    if (localOptions) {
+      options = Object.assign(options, JSON.parse(localOptions))
+    }
+
+    this.darkMode = options.darkMode
     this.playAudioOnPartReveal = options.playAudioOnPartReveal
   }
   saveOptions () {
     localStorage.setItem('translation-practice:options', JSON.stringify({
+      darkMode: this.darkMode,
       playAudioOnPartReveal: this.playAudioOnPartReveal
     }))
   }
