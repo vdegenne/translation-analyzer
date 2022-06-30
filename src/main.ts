@@ -641,6 +641,6 @@ export class AppContainer extends LitElement {
     // pick a random word
     const word=getRandomWord([5,4])
     await this.fetchTranslations(word[0])
-    this.feedback = html`fetched : ${word[0]}`
+    // this.feedback = html`fetched : ${word[0]}`
   }
 }
