@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap" rel="stylesheet">
+
+    <link rel="shortcut icon" href="./img/android-chrome-192x192.png" type="image/x-icon">
+    <link rel="icon" href="./img/android-chrome-192x192.png" type="image/x-icon">
   </head>
   <body>
     <style>
@@ -36,6 +39,11 @@
         snackbar.labelText = labelText;
         snackbar.timeoutMs = timeoutMs;
         snackbar.open = true;
+      }
+
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js');
       }
     </script>
   </body>

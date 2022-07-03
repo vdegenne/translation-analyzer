@@ -22,6 +22,7 @@ import './search-manager'
 import './speech'
 import './context-menu'
 import './loop-player'
+import './favorite-dialog'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
@@ -35,6 +36,7 @@ import { ContextMenu } from './context-menu'
 import {LoopPlayer} from "./loop-player";
 import {Slider} from "@material/mwc-slider";
 import { ControllerController } from './ControllerController'
+import { Favorite } from './favorite-dialog'
 
 declare global {
   interface Window {
@@ -79,6 +81,10 @@ export class AppContainer extends LitElement {
 
   get sourceContent (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
+  }
+
+  get translatedContent () {
+    return this.translation?.translated.split('\n').filter(p=>p)[this.paragraphIndex]!
   }
 
   get visibleSourceContent () {
@@ -205,6 +211,7 @@ export class AppContainer extends LitElement {
 
     <header>
       <div id=feedback>${this.feedback}</div>
+      <favorite-dialog .activeTranslation=${[this.sourceContent, this.translatedContent] as Favorite}></favorite-dialog>
         <!-- <mwc-icon-button icon="search"
                          @click=${() => {
                              this.openSearchManager()
@@ -302,6 +309,7 @@ export class AppContainer extends LitElement {
         </div>
 
     <paste-box></paste-box>
+
 
     <search-manager></search-manager>
 
