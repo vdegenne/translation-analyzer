@@ -296,8 +296,6 @@ export class AppContainer extends LitElement {
                     @click=${()=>{this.showTranslated=!this.showTranslated}}></mwc-icon-button>
 
                 <mwc-slider
-                        discrete
-                        withTickMarks
                         step="1"
                         min="5"
                         max="80"

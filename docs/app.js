@@ -2440,8 +2440,6 @@ const Tn=ie`.mdc-elevation-overlay{position:absolute;border-radius:inherit;point
                     @click=${()=>{this.showTranslated=!this.showTranslated}}></mwc-icon-button>
 
                 <mwc-slider
-                        discrete
-                        withTickMarks
                         step="1"
                         min="5"
                         max="80"
