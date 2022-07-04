@@ -23,6 +23,7 @@ import './speech'
 import './context-menu'
 import './loop-player'
 import './favorite-dialog'
+import './icon-button'
 
 import './paste-box'
 import { PasteBox } from './paste-box'
@@ -213,15 +214,38 @@ export class AppContainer extends LitElement {
       <div id=feedback>${this.feedback}</div>
       <favorite-dialog .activeTranslation=${[this.sourceContent, this.translatedContent] as Favorite}></favorite-dialog>
         <!-- <mwc-icon-button icon="search"
-                         @click=${() => {
-                             this.openSearchManager()
-                         }}>
+                        @click=${() => {
+                            this.openSearchManager()
+                        }}>
         </mwc-icon-button> -->
         <loop-player .appContainer=${this}></loop-player>
-        <mwc-icon-button icon="casino"
-            @click=${()=>{this.onCasinoButtonClick()}}></mwc-icon-button>
-      <mwc-icon-button icon=settings
-                       @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
+        <icon-button icon="casino"
+            @tap=${(e)=>{
+              const menu = e.target.firstElementChild
+              menu.anchor = e.target
+              menu.show()
+            }}
+            @long-press=${(e)=>{ this.onCasinoButtonClick() }}>
+          <mwc-menu fixed style="position:absolute"
+                  @action=${(e)=>{ this.onCasinoButtonClick([5 - e.detail.index])}}>
+              <mwc-list-item>
+                  <span>jlpt5</span>
+              </mwc-list-item>
+              <mwc-list-item>
+                  <span>jlpt4</span>
+              </mwc-list-item>
+              <mwc-list-item>
+                  <span>jlpt3</span>
+              </mwc-list-item>
+              <mwc-list-item>
+                  <span>jlpt2</span>
+              </mwc-list-item>
+              <mwc-list-item>
+                  <span>jlpt1</span>
+              </mwc-list-item>
+          </mwc-menu>
+        </icon-button>
+      <mwc-icon-button icon=settings @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
         <!-- <mwc-icon-button
                 @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
             <img src="./img/github.ico">
@@ -643,9 +667,9 @@ export class AppContainer extends LitElement {
   //   await this.speakSource(false)
   // }
 
-  private async onCasinoButtonClick() {
+  private async onCasinoButtonClick(jlpts?: number[]) {
     // pick a random word
-    const word=getRandomWord([5,4])
+    const word=getRandomWord(jlpts)
     await this.fetchTranslations(word[0])
     // this.feedback = html`fetched : ${word[0]}`
   }
