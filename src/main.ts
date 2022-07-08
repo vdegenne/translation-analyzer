@@ -400,6 +400,7 @@ export class AppContainer extends LitElement {
 
       // if we've click in the back
       if (e.button==0 && ['app', 'translations'].includes(target.id) && !this.selection && !this.contextMenu.open) {
+        e.preventDefault()
         this.revealNextPart()
         // this.speakNextPart()
         // this.onParagraphClick()
