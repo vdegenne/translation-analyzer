@@ -692,6 +692,6 @@ export class AppContainer extends LitElement {
       settings = JSON.parse(localStorage.getItem('translation-practice:settings')!)
     }
 
-    this.fontSize = this.fontSize
+    this.fontSize = settings.fontSize
   }
 }
