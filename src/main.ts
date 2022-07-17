@@ -50,7 +50,7 @@ declare global {
 export class AppContainer extends LitElement {
   @state() translation?: Translation;
   @state() paragraphIndex = 0
-  @state() fontSize = 19;
+  @state() fontSize;
   @state() feedback: HTMLTemplateResult = html``;
   @state() showTranslated = true
 
@@ -357,6 +357,9 @@ export class AppContainer extends LitElement {
 
   protected updated(_changedProperties: PropertyValues) {
     this.shadowRoot!.querySelector('mwc-slider')!.layout()
+    if (_changedProperties.has('fontSize')) {
+      this.saveSettings()
+    }
     super.updated(_changedProperties);
   }
 
@@ -500,6 +503,7 @@ export class AppContainer extends LitElement {
     /** decimal values **/
     this.speedSlider.valueToValueIndicatorTransform = (A) => ''+(A/100)
     this.loadPageIndex()
+    this.loadSettings()
   }
 
   previousPage () {
@@ -673,5 +677,21 @@ export class AppContainer extends LitElement {
     const word=getRandomWord(jlpts)
     await this.fetchTranslations(word[0])
     // this.feedback = html`fetched : ${word[0]}`
+  }
+
+  saveSettings () {
+    localStorage.setItem('translation-practice:settings', JSON.stringify({
+      fontSize: this.fontSize
+    }))
+  }
+  loadSettings () {
+    let settings = { // default
+      fontSize: 19
+    }
+    if (localStorage.getItem('translation-practice:settings')) {
+      settings = JSON.parse(localStorage.getItem('translation-practice:settings')!)
+    }
+
+    this.fontSize = this.fontSize
   }
 }
