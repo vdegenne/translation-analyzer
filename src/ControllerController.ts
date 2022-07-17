@@ -104,7 +104,7 @@ export class ControllerController {
         button.dispatchEvent(new PointerEvent('pointerup'))
         button.click()
       })
-      .before('button6', ()=>{this.app.clickListenButton()})
+      // .before('button6', ()=>{this.app.clickListenButton()})
       // .before('button4', ()=>{
       //   if (this.secondary) {
       //     this.app.videoElement.speedDown()
