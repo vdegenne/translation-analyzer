@@ -79,6 +79,11 @@ export class AppContainer extends LitElement {
   @query('mwc-icon-button[icon="arrow_forward"]') arrowForwardButton!: IconButton;
   @query('mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
 
+  constructor () {
+    super()
+    this.loadSettings()
+  }
+
 
   get sourceContent (): string {
     return this.translation?.source.split('\n').filter(p=>p)[this.paragraphIndex]!
@@ -503,7 +508,6 @@ export class AppContainer extends LitElement {
     /** decimal values **/
     this.speedSlider.valueToValueIndicatorTransform = (A) => ''+(A/100)
     this.loadPageIndex()
-    this.loadSettings()
   }
 
   previousPage () {
