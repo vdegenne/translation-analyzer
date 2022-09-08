@@ -1,6 +1,7 @@
 import gameControl from 'gamecontroller.js/src/gamecontrol.js'
 import { AppContainer } from './main'
 import { EventIconButton } from './event-icon-button';
+import { cancelAudio } from './util';
 
 export class ControllerController {
   private app: AppContainer;
@@ -22,6 +23,9 @@ export class ControllerController {
       gamepad
       .before('button0', ()=>{
         this.app.revealNextPart()
+      })
+      .before('button1', () => {
+        cancelAudio()
       })
       .before('button14', ()=>{
         this.app.arrowBackButton.click()
