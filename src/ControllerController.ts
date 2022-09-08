@@ -23,87 +23,28 @@ export class ControllerController {
       .before('button0', ()=>{
         this.app.revealNextPart()
       })
-      .before('button9', () => {
-        this.app.casinoButton.click()
-        playShuffle()
-      })
-
-      .before('button1', ()=>{
-        this.app.tatoebaDialog.close()
-        this.app.searchManager.close()
-        window.searchManager.close()
-      })
-      // .before('button14', ()=>{
-      //   this.leftArrowPressed = true
-      //   this.app.videoElement.stepBack(this.secondary ? 0.1 : 1);
-      //   setTimeout(async ()=>{
-      //     while (this.leftArrowPressed) {
-      //       this.app.videoElement.stepBack(this.secondary ? 0.1 : 1);
-      //       await sleep(100)
-      //     }
-      //   }, 1000)
-      // })
-      // .after('button14', ()=>{ this.leftArrowPressed = false })
-      // // ----->
       .before('button14', ()=>{
         this.app.arrowBackButton.click()
       })
       .before('button15', ()=>{
         this.app.arrowForwardButton.click()
       })
-      .before('left0', ()=>{
-        if (this.app.candidatesRow.selectPreviousCandidate()) {
-          playTick1()
-        }
+      .before('button6', () => {
+        this.app.speakSourceParagraph()
       })
-      .before('right0', ()=>{
-        if (this.app.candidatesRow.selectNextCandidate()) {
-          playTick1()
-        }
-      })
-      // .before('button15', ()=>{
-      //   this.rightArrowPressed = true
-      //   this.app.videoElement.stepForward(this.secondary ? 0.1 : 1);
-      //   setTimeout(async ()=>{
-      //     while (this.rightArrowPressed) {
-      //       this.app.videoElement.stepForward(this.secondary ? 0.1 : 1);
-      //       await sleep(100)
-      //     }
-      //   }, 1000)
-      // })
-      // .after('button15', ()=>{ this.rightArrowPressed = false })
-
-      // .before('button3', ()=>this.app.insertNewCue())
-
-      // .before('button12', ()=>this.app.previousCue())
-      // .before('button13', ()=>{
-      //   if (this.secondary) {
-      //     this.app.lastCue();
-      //   }
-      //   else {
-      //     this.app.nextCue()
-      //   }
-      // })
       .before('button7', ()=>{
         this.app.speakButton.click()
       })
-      .before('button3', ()=>{if (this.app.revealed) {
-        playShuffle()
-        this.app.clickNextButton()
-      }})
+      .before('button8', () => {
+        this.app.speakTranslatedParagraph()
+      })
+      .before('button9', () => {
+        this.app.casinoButton.dispatchEvent(new CustomEvent('long-press'))
+      })
       // .before('button7', ()=>{
       //   this.app.togglePlayInterval()
       // })
 
-      .before('button4', () => {
-        const button = this.app.shadowRoot!.querySelector('event-icon-button[icon=record_voice_over]') as EventIconButton
-        button.dispatchEvent(new PointerEvent('pointerdown'))
-      })
-      .after('button4', () => {
-        const button = this.app.shadowRoot!.querySelector('event-icon-button[icon=record_voice_over]') as EventIconButton
-        button.dispatchEvent(new PointerEvent('pointerup'))
-        button.click()
-      })
       // .before('button6', ()=>{this.app.clickListenButton()})
       // .before('button4', ()=>{
       //   if (this.secondary) {

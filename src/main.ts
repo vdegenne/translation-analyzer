@@ -38,6 +38,7 @@ import {LoopPlayer} from "./loop-player";
 import {Slider} from "@material/mwc-slider";
 import { ControllerController } from './ControllerController'
 import { Favorite } from './favorite-dialog'
+import { playAppear, playDice } from './audio'
 
 declare global {
   interface Window {
@@ -60,6 +61,8 @@ export class AppContainer extends LitElement {
   //
   @queryAll('.part') partElements!: HTMLSpanElement[];
   @queryAll('.paragraph[selected] .source .part') sourcePartElements!: HTMLSpanElement[];
+  @queryAll('.paragraph[selected] .source .part:not([conceal])') revealedPartElements!: HTMLSpanElement[];
+  @queryAll('.paragraph[selected] .source .part[conceal]') concealedPartElements!: HTMLSpanElement[];
   @queryAll('.paragraph') paragraphElements!: HTMLDivElement[];
 
   // next hidden part
@@ -74,7 +77,7 @@ export class AppContainer extends LitElement {
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
   @query('mwc-slider#speed-slider') speedSlider!: Slider;
-  @query('mwc-icon-button[icon="casino"]') casinoButton!: IconButton;
+  @query('icon-button[icon="casino"]') casinoButton!: IconButton;
   @query('mwc-icon-button[icon="arrow_back"]') arrowBackButton!: IconButton;
   @query('mwc-icon-button[icon="arrow_forward"]') arrowForwardButton!: IconButton;
   @query('mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
@@ -102,6 +105,10 @@ export class AppContainer extends LitElement {
       includes.push(el)
     }
     return includes.map(el=>el.textContent).join('')
+  }
+
+  get lastRevealedPartContent () {
+    return [...this.revealedPartElements].pop()?.textContent?.trim()
   }
 
   get hasMoreTranslation () {
@@ -226,12 +233,16 @@ export class AppContainer extends LitElement {
         <loop-player .appContainer=${this}></loop-player>
         <icon-button icon="casino"
             @tap=${(e)=>{
-              const menu = e.target.firstElementChild
-              menu.anchor = e.target
-              menu.show()
+              const target = e.target
+              setTimeout(() => {
+                const menu = target.firstElementChild
+                menu.anchor = target
+                menu.show()
+              }, 250)
             }}
             @long-press=${(e)=>{ this.onCasinoButtonClick() }}>
           <mwc-menu fixed style="position:absolute"
+                  @pointerup=${(e)=>{e.stopPropagation()}}
                   @action=${(e)=>{ this.onCasinoButtonClick([5 - e.detail.index])}}>
               <mwc-list-item>
                   <span>jlpt5</span>
@@ -541,6 +552,7 @@ export class AppContainer extends LitElement {
       nextConcealedPart.removeAttribute('conceal')
       if (speak == true || (speak == undefined && this.pasteBox.playAudioOnPartReveal == true)) {
         await this.speakSource()
+        // await this.speakLastRevealedPart()
       }
     }
   }
@@ -555,6 +567,24 @@ export class AppContainer extends LitElement {
     }
   }
 
+  async speakLastRevealedPart () {
+    let text = this.lastRevealedPartContent
+    if (!text) {
+      text = this.sourceContent
+    }
+
+    try {
+      if (!text) { throw new Error() }
+      await speak(text, this._playbackRate)
+    }
+    catch (e) {
+      return
+    }
+
+    if (this.concealedPartElements.length == 0) {
+      await ringTheBell()
+    }
+  }
   async speakSource () {
     // play selection or all
     let text = this.visibleSourceContent
@@ -575,6 +605,11 @@ export class AppContainer extends LitElement {
       // bell
       await ringTheBell()
     }
+  }
+  async speakSourceParagraph () {
+    try {
+      await speak(this.sourceContent, this._playbackRate)
+    } catch (e) {}
   }
 
 
@@ -679,7 +714,9 @@ export class AppContainer extends LitElement {
   private async onCasinoButtonClick(jlpts?: number[]) {
     // pick a random word
     const word=getRandomWord(jlpts)
+    playDice()
     await this.fetchTranslations(word[0])
+    playAppear()
     // this.feedback = html`fetched : ${word[0]}`
   }
 

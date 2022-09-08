@@ -29,6 +29,10 @@ export function googleImageSearch (word) {
   window.open(`http://www.google.com/search?q=${encodeURIComponent(word)}&tbm=isch`, '_blank')
 }
 
+export function goo(word) {
+  window.open(`https://dictionary.goo.ne.jp/word/${encodeURIComponent(word)}/`, '_blank')
+}
+
 // export function mdbg (word) {
 //   window.open(`https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=${encodeURIComponent(word)}`, '_blank")
 // }

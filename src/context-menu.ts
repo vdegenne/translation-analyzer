@@ -1,6 +1,6 @@
 import {css, html, LitElement, nothing, PropertyValues} from "lit";
 import {customElement, query, state} from "lit/decorators.js";
-import {googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba} from "./util";
+import {goo, googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba} from "./util";
 import {Menu} from "@material/mwc-menu";
 import {getExactSearch, getRandomWord} from "./search-manager";
 import {JlptWordEntry} from "./types";
@@ -27,11 +27,11 @@ export class ContextMenu extends LitElement {
 
     return html`
       <mwc-menu fixed quick>
-          <mwc-list-item noninteractive style="font-family: 'Sawarabi Mincho'"
+          <mwc-list-item style="font-family: 'Sawarabi Mincho';padding:9px 16px;"
             @click=${()=>{window.app.searchManager.show(this.value)}}>
               <span>${this.value}</span>
               ${exactSearch && exactSearch[1]
-                      ? html`<br><span>${exactSearch[0] == this.value ? exactSearch[1] : exactSearch[0]}</span>` 
+                      ? html`<br><span>${exactSearch[0] == this.value ? exactSearch[1] : exactSearch[0]}</span>`
                       : nothing }
           </mwc-list-item>
           <li divider role="separator"></li>
@@ -39,6 +39,11 @@ export class ContextMenu extends LitElement {
           <mwc-list-item id="google-images" graphic=icon @click=${()=>{googleImageSearch(this.value)}}>
               <span>Google Images</span>
               <mwc-icon slot=graphic style="color:#2196f3">images</mwc-icon>
+          </mwc-list-item>
+          <!-- goo -->
+          <mwc-list-item id="goo" graphic=icon @click=${() => { goo(this.value) }}>
+            <span>Goo</span>
+            <img src="./img/goo.ico" slot="graphic">
           </mwc-list-item>
           <!-- jisho -->
           <mwc-list-item id="jisho" graphic=icon @click=${()=>{jisho(this.value)}}>
@@ -63,11 +68,11 @@ export class ContextMenu extends LitElement {
               <span>Listen</span>
               <mwc-icon slot=graphic>volume_up</mwc-icon>
           </mwc-list-item>
-          <mwc-list-item id="search" graphic=icon @click=${()=>{window.app.searchManager.show(this.value)}}
+          <!-- <mwc-list-item id="search" graphic=icon @click=${()=>{}}
                 style="color:${exactSearch ? '#2196f3' : 'initial'}">
               <span>search</span>
               <mwc-icon slot=graphic style="color: inherit">search</mwc-icon>
-          </mwc-list-item>
+          </mwc-list-item> -->
       </mwc-menu>
     `
   }
