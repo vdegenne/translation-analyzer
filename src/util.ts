@@ -83,9 +83,9 @@ export async function playJapaneseAudio (word) {
   return new Promise((resolve, reject) => {
     if (_playingController !== null) {
       _playingController.signal.addEventListener('abort', () => {
+        reject()
         audio.pause()
         // resolve(null)
-        reject()
       })
     }
     const audio = new Audio(`https://assiets.vdegenne.com/data/japanese/audio/${encodeURIComponent(word)}`)
