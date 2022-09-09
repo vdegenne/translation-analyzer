@@ -18,6 +18,9 @@ function getCandidates (langs: string[], preferredNames: string[]) {
 export function speak (voice: SpeechSynthesisVoice, text: string, volume = .5, rate = .7): Promise<void> {
   return new Promise((resolve, reject) => {
     const utterance = new SpeechSynthesisUtterance();
+    utterance.addEventListener('cancel', () => {
+      reject()
+    })
     Object.assign(utterance, { voice, text, volume, rate })
     utterance.lang = voice.lang.replace(/_/, '-')
     utterance.onend = () => {
@@ -74,5 +77,6 @@ speechSynthesis.getVoices()
 
 
 export function cancelSpeech () {
+  _utterance?.dispatchEvent(new CustomEvent('cancel'))
   spchsys.cancel()
 }
