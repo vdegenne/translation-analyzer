@@ -1,22 +1,12 @@
 import gameControl from 'gamecontroller.js/src/gamecontrol.js'
 import { AppContainer } from './main'
-import { EventIconButton } from './event-icon-button';
 import { cancelAudio } from './util';
 
 export class ControllerController {
   private app: AppContainer;
-  // private controllerEventsLoopHandle
-  // private controllerEventsLoopBind = this.controllerEventsLoop.bind(this)
-  // private gamepad!: Gamepad
-  // private pressed: number[] = []
 
-  private secondary =false
-  private leftArrowPressed = false
-  private rightArrowPressed = false
+  private secondary = false
 
-  /**
-   * Constructor
-   */
   constructor (appInstance: AppContainer) {
     this.app = appInstance;
     gameControl.on('connect', gamepad=>{
@@ -32,6 +22,12 @@ export class ControllerController {
       })
       .before('button15', ()=>{
         this.app.arrowForwardButton.click()
+      })
+      .before('button4', () => {
+        this.app.incrementPlaybackRate(-0.10)
+      })
+      .before('button5', () => {
+        this.app.incrementPlaybackRate(+0.10)
       })
       .before('button6', () => {
         this.app.speakSourceParagraph()

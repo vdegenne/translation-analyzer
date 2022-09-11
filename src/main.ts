@@ -55,10 +55,8 @@ export class AppContainer extends LitElement {
   @state() feedback: HTMLTemplateResult = html``;
   @state() showTranslated = true
 
-  private _playbackRate = .7
-  private controllerController = new ControllerController(this)
+  private playbackRate = .7
 
-  //
   @queryAll('.part') partElements!: HTMLSpanElement[];
   @queryAll('.paragraph[selected] .source .part') sourcePartElements!: HTMLSpanElement[];
   @queryAll('.paragraph[selected] .source .part:not([conceal])') revealedPartElements!: HTMLSpanElement[];
@@ -85,6 +83,7 @@ export class AppContainer extends LitElement {
   constructor () {
     super()
     this.loadSettings()
+    new ControllerController(this)
   }
 
 
@@ -325,8 +324,8 @@ export class AppContainer extends LitElement {
                             min="20"
                             max="100"
                             step="10"
-                            value=${this._playbackRate*100}
-                            @change=${e=> {this._playbackRate = e.detail.value / 100}}
+                            value=${this.playbackRate*100}
+                            @change=${e=> {this.playbackRate = e.detail.value / 100}}
                     ></mwc-slider>
                 </div>
                 <mwc-icon-button icon="speed"
@@ -560,7 +559,7 @@ export class AppContainer extends LitElement {
   async speakSelection () {
     if (this.selection) {
       try {
-        await speak(this.selection, this._playbackRate)
+        await speak(this.selection, this.playbackRate)
       } catch (e) {
         return
       }
@@ -575,7 +574,7 @@ export class AppContainer extends LitElement {
 
     try {
       if (!text) { throw new Error() }
-      await speak(text, this._playbackRate)
+      await speak(text, this.playbackRate)
     }
     catch (e) {
       return
@@ -586,9 +585,10 @@ export class AppContainer extends LitElement {
     }
   }
   async speakSource () {
-    // play selection or all
+    // play discovered content
     let text = this.visibleSourceContent
     if (!text) {
+      // or all
       text = this.sourceContent
     }
 
@@ -596,22 +596,28 @@ export class AppContainer extends LitElement {
     try {
       if (!text) { throw new Error() }
       // @TODO : the function here should throw if it was intentionally stopped
-      await speak(text, this._playbackRate)
+      await speak(text, this.playbackRate)
     } catch (e) {
       return
     }
 
-    if (text == this.sourceContent) {
+    if (this.visibleSourceContent && text == this.sourceContent) {
       // bell
       await ringTheBell()
     }
   }
   async speakSourceParagraph () {
     try {
-      await speak(this.sourceContent, this._playbackRate)
+      await speak(this.sourceContent, this.playbackRate)
     } catch (e) {}
   }
 
+  incrementPlaybackRate (incrementation: number) {
+    this.playbackRate += incrementation
+    if (this.playbackRate < 0.2) { this.playbackRate = 0.20 }
+    if (this.playbackRate > 1) { this.playbackRate = 1 }
+    this.requestUpdate()
+  }
 
   // async speakVisibleSource () {
   //   // console.log(this.visibleSourceContent)
