@@ -10,11 +10,12 @@ import {
   HTMLTemplateResult
 } from 'lit'
 import { customElement, query, queryAll, state } from 'lit/decorators.js'
-import {unsafeHTML} from 'lit/directives/unsafe-html.js'
 import '@material/mwc-snackbar'
 import '@material/mwc-button'
 import '@material/mwc-icon-button'
 import '@material/mwc-slider'
+import {Menu} from '@material/mwc-menu'
+import '@material/mwc-list/mwc-check-list-item'
 // import '@material/mwc-dialog'
 // import '@material/mwc-textfield'
 // import '@material/mwc-checkbox'
@@ -75,10 +76,11 @@ export class AppContainer extends LitElement {
   @query('search-manager') searchManager!: SearchManager;
   @query('context-menu') contextMenu!: ContextMenu;
   @query('mwc-slider#speed-slider') speedSlider!: Slider;
-  @query('icon-button[icon="casino"]') casinoButton!: IconButton;
+  @query('mwc-icon-button[icon="casino"]') casinoButton!: IconButton;
   @query('mwc-icon-button[icon="arrow_back"]') arrowBackButton!: IconButton;
   @query('mwc-icon-button[icon="arrow_forward"]') arrowForwardButton!: IconButton;
   @query('mwc-icon-button[icon=volume_up]') speakButton!: IconButton;
+  @query('mwc-menu') casinoMenu!: Menu;
 
   constructor () {
     super()
@@ -230,36 +232,77 @@ export class AppContainer extends LitElement {
                         }}>
         </mwc-icon-button> -->
         <loop-player .appContainer=${this}></loop-player>
-        <icon-button icon="casino"
-            @tap=${(e)=>{
-              const target = e.target
-              setTimeout(() => {
-                const menu = target.firstElementChild
-                menu.anchor = target
-                menu.show()
-              }, 250)
-            }}
-            @long-press=${(e)=>{ this.onCasinoButtonClick() }}>
-          <mwc-menu fixed style="position:absolute"
-                  @pointerup=${(e)=>{e.stopPropagation()}}
-                  @action=${(e)=>{ this.onCasinoButtonClick([5 - e.detail.index])}}>
-              <mwc-list-item>
-                  <span>jlpt5</span>
+        <mwc-icon-button icon="casino"
+            @click=${(e)=>{
+              // const target = e.target
+              // setTimeout(() => {
+                // try {
+                // const menu = target.firstElementChild
+                if (e.target == this.casinoButton) {
+                  this.onCasinoButtonClick([5])
+                  // console.log('yup')
+                  // this.casinoMenu.anchor = this.casinoButton
+                  // this.casinoMenu.show()
+                }
+                // } catch (e) {}
+              // }, 250)
+            }}>
+
+          <mwc-menu fixed style="position:absolute;left:999999px" quick multi @action=${e=>{this.casinoMenu.show()}}>
+                  <!-- @pointerup=${(e)=>{e.stopPropagation()}}
+                  @action=${(e)=>{ this.onCasinoButtonClick([5 - e.detail.index])}}> -->
+              <mwc-list-item >
+                <mwc-icon-button icon="casino"></mwc-icon-button>
+                <span>Any of the selected below</span>
+              </mwc-list-item>
+
+              <li divider role="separator"></li>
+
+              <mwc-check-list-item left mwc-list-item>
+                <div style="display:flex;align-items:center">
+                  <span style="margin-right:24px">JLPT5</span>
+                  <mwc-icon-button icon=casino @click=${(e)=>{e.stopPropagation()}}></mwc-icon-button>
+                </div>
+              </mwc-check-list-item>
+              <mwc-check-list-item left mwc-list-item>
+                <div style="display:flex;align-items:center">
+                  <span style="margin-right:24px">JLPT4</span>
+                  <mwc-icon-button icon=casino @click=${(e)=>{e.stopPropagation()}}></mwc-icon-button>
+                </div>
+              </mwc-check-list-item>
+              <mwc-check-list-item left mwc-list-item>
+                <div style="display:flex;align-items:center">
+                  <span style="margin-right:24px">JLPT3</span>
+                  <mwc-icon-button icon=casino @click=${(e)=>{e.stopPropagation()}}></mwc-icon-button>
+                </div>
+              </mwc-check-list-item>
+              <mwc-check-list-item left mwc-list-item>
+                <div style="display:flex;align-items:center">
+                  <span style="margin-right:24px">JLPT2</span>
+                  <mwc-icon-button icon=casino @click=${(e)=>{e.stopPropagation()}}></mwc-icon-button>
+                </div>
+              </mwc-check-list-item>
+              <mwc-check-list-item left mwc-list-item>
+                <div style="display:flex;align-items:center">
+                  <span style="margin-right:24px">JLPT1</span>
+                  <mwc-icon-button icon=casino @click=${(e)=>{e.stopPropagation()}}></mwc-icon-button>
+                </div>
+              </mwc-check-list-item>
+
+              <!-- <mwc-list-item>
+                <span>jlpt4</span>
               </mwc-list-item>
               <mwc-list-item>
-                  <span>jlpt4</span>
+                <span>jlpt3</span>
               </mwc-list-item>
               <mwc-list-item>
-                  <span>jlpt3</span>
+                <span>jlpt2</span>
               </mwc-list-item>
               <mwc-list-item>
-                  <span>jlpt2</span>
-              </mwc-list-item>
-              <mwc-list-item>
-                  <span>jlpt1</span>
-              </mwc-list-item>
+                <span>jlpt1</span>
+              </mwc-list-item> -->
           </mwc-menu>
-        </icon-button>
+        </mwc-icon-button>
       <mwc-icon-button icon=settings @click=${()=>{this.pasteBox.show()}}></mwc-icon-button>
         <!-- <mwc-icon-button
                 @click=${()=>{window.open('https://github.com/vdegenne/translation-analyzer/tree/master/docs', '_blank')}}>
@@ -720,6 +763,7 @@ export class AppContainer extends LitElement {
   private async onCasinoButtonClick(jlpts?: number[]) {
     // pick a random word
     const word=getRandomWord(jlpts)
+    console.log(word)
     playDice()
     await this.fetchTranslations(word[0])
     playAppear()
