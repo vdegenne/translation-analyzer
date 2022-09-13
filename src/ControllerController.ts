@@ -39,7 +39,7 @@ export class ControllerController {
         this.app.speakTranslatedParagraph()
       })
       .before('button9', () => {
-        this.app.casinoButton.dispatchEvent(new CustomEvent('long-press'))
+        this.app.casinoButton.click()
       })
       // .before('button7', ()=>{
       //   this.app.togglePlayInterval()
