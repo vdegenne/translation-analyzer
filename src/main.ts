@@ -239,7 +239,7 @@ export class AppContainer extends LitElement {
                 // try {
                 // const menu = target.firstElementChild
                 if (e.target == this.casinoButton) {
-                  this.onCasinoButtonClick([5])
+                  this.onCasinoButtonClick([5, 4, 3])
                   // console.log('yup')
                   // this.casinoMenu.anchor = this.casinoButton
                   // this.casinoMenu.show()
@@ -248,7 +248,7 @@ export class AppContainer extends LitElement {
               // }, 250)
             }}>
 
-          <mwc-menu fixed style="position:absolute;left:999999px" quick multi @action=${e=>{this.casinoMenu.show()}}>
+          <mwc-menu fixed style="position:absolute" quick multi @action=${e=>{this.casinoMenu.show()}}>
                   <!-- @pointerup=${(e)=>{e.stopPropagation()}}
                   @action=${(e)=>{ this.onCasinoButtonClick([5 - e.detail.index])}}> -->
               <mwc-list-item >

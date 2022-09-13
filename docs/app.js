@@ -2411,9 +2411,9 @@ const zn=ie`.mdc-elevation-overlay{position:absolute;border-radius:inherit;point
         </mwc-icon-button> -->
         <loop-player .appContainer=${this}></loop-player>
         <mwc-icon-button icon="casino"
-            @click=${e=>{e.target==this.casinoButton&&this.onCasinoButtonClick([5])}}>
+            @click=${e=>{e.target==this.casinoButton&&this.onCasinoButtonClick([5,4,3])}}>
 
-          <mwc-menu fixed style="position:absolute;left:999999px" quick multi @action=${e=>{this.casinoMenu.show()}}>
+          <mwc-menu fixed style="position:absolute" quick multi @action=${e=>{this.casinoMenu.show()}}>
                   <!-- @pointerup=${e=>{e.stopPropagation()}}
                   @action=${e=>{this.onCasinoButtonClick([5-e.detail.index])}}> -->
               <mwc-list-item >
