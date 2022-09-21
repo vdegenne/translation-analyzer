@@ -64,7 +64,7 @@ export class PasteBox extends LitElement {
         <mwc-switch ?selected=${this.darkMode}
           @click=${(e)=>{this.darkMode=e.target.selected}}></mwc-switch>
       </mwc-formfield>
-      <mwc-select name=lang fixedMenuPosition value="Japanese">
+      <mwc-select name=lang fixedMenuPosition value="Japanese => English">
         ${Langs.map(l=>html`<mwc-list-item value=${l}>${l}</mwc-list-item>`)}
       </mwc-select>
 

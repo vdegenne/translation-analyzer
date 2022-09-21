@@ -1,4 +1,4 @@
-export const Langs = ['Japanese', 'Korean', 'French'] as const;
+export const Langs = ['Japanese => English', 'Japanese => Korean', 'Korean => Japanese', 'French'] as const;
 
 export type Language = typeof Langs[number];
 

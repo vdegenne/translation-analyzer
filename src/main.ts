@@ -208,8 +208,9 @@ export class AppContainer extends LitElement {
           _parts = paragraphs.map(p=>p.replace(/\ /g, ' <space> ').split(' ').map(w=>(w == '<space>')?' ':w))
           break
 
-        case 'Japanese':
-        case 'Korean':
+        case 'Japanese => English':
+        case 'Japanese => Korean':
+        case 'Korean => Japanese':
           // break the paragraphs into character (letter)
           _parts = paragraphs.map(p=>p.split(''))
           break
@@ -701,10 +702,11 @@ export class AppContainer extends LitElement {
   public async fetchTranslations (word: string) {
     let url;
     switch (this.pasteBox.translation.lang) {
-      case "Japanese":
+      case 'Japanese => English':
         url = `https://assiets.vdegenne.com/japanese/tatoeba/${encodeURIComponent(word)}`
         break
-      case "Korean":
+      case 'Japanese => Korean':
+      case 'Korean => Japanese':
         url = `https://assiets.vdegenne.com/korean/examples/from/japanese/${encodeURIComponent(word)}`
         break
       default:
@@ -721,18 +723,25 @@ export class AppContainer extends LitElement {
 
     let translation: Translation
     switch (this.pasteBox.translation.lang) {
-      case "Japanese":
+      case 'Japanese => English':
         translation = {
-          lang: 'Japanese',
+          lang: 'Japanese => English',
           source : translations.map(t=>t.j).join('\n'),
           translated : translations.map(t=>t.e).join('\n')
         }
         break
-      case "Korean":
+      case 'Korean => Japanese':
         translation = {
-          lang: 'Korean',
+          lang: 'Korean => Japanese',
           source : translations.map(t=>t.k).join('\n'),
           translated : translations.map(t=>t.j).join('\n')
+        }
+        break
+      case 'Japanese => Korean':
+        translation = {
+          lang: 'Japanese => Korean',
+          source : translations.map(t=>t.j).join('\n'),
+          translated : translations.map(t=>t.k).join('\n')
         }
         break
     }
