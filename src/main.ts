@@ -240,7 +240,7 @@ export class AppContainer extends LitElement {
                 // try {
                 // const menu = target.firstElementChild
                 if (e.target == this.casinoButton) {
-                  this.onCasinoButtonClick([5, 4, 3])
+                  this.onCasinoButtonClick([5, 4, 3, 2])
                   // console.log('yup')
                   // this.casinoMenu.anchor = this.casinoButton
                   // this.casinoMenu.show()
