@@ -36,7 +36,9 @@
     <mwc-snackbar id=snackbar></mwc-snackbar>
 
     <script type=module src="./src/main.ts"></script>
-    <script>
+    <script type="module">
+      import sw from './assets/sw.js?url';
+
       window.toast = function (labelText, timeoutMs = 4000) {
         snackbar.labelText = labelText;
         snackbar.timeoutMs = timeoutMs;
@@ -45,7 +47,7 @@
 
 
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./assets/sw.js');
+        navigator.serviceWorker.register(sw);
       }
     </script>
   </body>

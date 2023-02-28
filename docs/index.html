@@ -14,7 +14,7 @@
     <link rel="icon" href="./img/android-chrome-192x192.png" type="image/x-icon">
 
     <!-- <link rel="manifest" href="./assets/manifest.json" /> -->
-    <script type="module" crossorigin src="/assets/index-4995eeac.js"></script>
+    <script type="module" crossorigin src="/assets/index-cffc0d4a.js"></script>
   </head>
   <body>
     <style>
@@ -37,17 +37,6 @@
     <mwc-snackbar id=snackbar></mwc-snackbar>
 
     
-    <script>
-      window.toast = function (labelText, timeoutMs = 4000) {
-        snackbar.labelText = labelText;
-        snackbar.timeoutMs = timeoutMs;
-        snackbar.open = true;
-      }
-
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./assets/sw.js');
-      }
-    </script>
+    
   </body>
 </html>
