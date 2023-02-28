@@ -14,7 +14,6 @@
     <link rel="icon" href="./img/android-chrome-192x192.png" type="image/x-icon">
 
     <!-- <link rel="manifest" href="./assets/manifest.json" /> -->
-    <script type="module" crossorigin src="/assets/index-4995eeac.js"></script>
   </head>
   <body>
     <style>
@@ -36,7 +35,7 @@
 
     <mwc-snackbar id=snackbar></mwc-snackbar>
 
-    
+    <script type=module src="./src/main.ts"></script>
     <script>
       window.toast = function (labelText, timeoutMs = 4000) {
         snackbar.labelText = labelText;

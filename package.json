@@ -1,5 +1,11 @@
 {
   "name": "translation-practice",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "vite",
+    "deploy": "git add . && git commit -m \"$(./fruit.js)\" && git push",
+    "buildeploy": "npm run build && npm run deploy; ./beep.bat"
+  },
   "devDependencies": {
     "@material/mwc-button": "^0.25.3",
     "@material/mwc-checkbox": "^0.25.3",
@@ -20,19 +26,11 @@
     "@rollup/plugin-typescript": "^8.3.0",
     "@vdegenne/clipboard-copy": "^3.1.0",
     "asian-regexps": "^4.3.0",
-    "browser-sync": "^2.27.7",
     "gamecontroller.js": "^1.5.0",
-    "lit": "^2.1.1",
-    "rollup": "^2.63.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "typescript": "^4.5.4"
-  },
-  "scripts": {
-    "build": "rollup -c --environment minify",
-    "watch": "rollup -cw",
-    "browser-sync": "browser-sync docs . --files docs/app.js --no-notify --no-open",
-    "deploy": "git add . && git commit -m \"$(./fruit.js)\" && git push",
-    "buildeploy": "npm run build && npm run deploy; ./beep.bat"
+    "lit": "^2.6.1",
+    "rollup": "^3.17.3",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4"
   },
   "dependencies": {
     "koa": "^2.13.4",

@@ -4,6 +4,11 @@ import {goo, googleImageSearch, jisho, mdbg, naver, playJapaneseAudio, tatoeba} 
 import {Menu} from "@material/mwc-menu";
 import {getExactSearch, getRandomWord} from "./search-manager";
 import {JlptWordEntry} from "./types";
+import gooIco from '../assets/img/goo.ico'
+import jishoIco from '../assets/img/jisho.ico'
+import mdbgIco from '../assets/img/mdbg.ico'
+import naverIco from '../assets/img/naver.ico'
+import tatoebaIco from '../assets/img/tatoeba.ico'
 
 @customElement('context-menu')
 export class ContextMenu extends LitElement {
@@ -43,24 +48,24 @@ export class ContextMenu extends LitElement {
           <!-- goo -->
           <mwc-list-item id="goo" graphic=icon @click=${() => { goo(this.value) }}>
             <span>Goo</span>
-            <img src="./img/goo.ico" slot="graphic">
+            <img src="${gooIco}" slot="graphic">
           </mwc-list-item>
           <!-- jisho -->
           <mwc-list-item id="jisho" graphic=icon @click=${()=>{jisho(this.value)}}>
               <span>Jisho</span>
-              <img src="./img/jisho.ico" slot="graphic">
+              <img src="${jishoIco}" slot="graphic">
           </mwc-list-item>
           <mwc-list-item id="mdbg" graphic=icon @click=${()=>{mdbg(this.value)}}>
               <span>MDBG</span>
-              <img src="./img/mdbg.ico" slot="graphic">
+              <img src="${mdbgIco}" slot="graphic">
           </mwc-list-item>
           <mwc-list-item id="naver" graphic=icon @click=${()=>{naver(this.value)}}>
               <span>Naver</span>
-              <img src="./img/naver.ico" slot="graphic">
+              <img src="${naverIco}" slot="graphic">
           </mwc-list-item>
           <mwc-list-item id="tatoeba" graphic=icon @click=${()=>{tatoeba(this.value)}}>
               <span>Tatoeba</span>
-              <img src="./img/tatoeba.ico" slot="graphic">
+              <img src="${tatoebaIco}" slot="graphic">
           </mwc-list-item>
           <li divider role=separator padded></li>
           <!-- listen -->

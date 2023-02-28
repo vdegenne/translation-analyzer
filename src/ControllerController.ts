@@ -1,81 +1,89 @@
-import gameControl from 'gamecontroller.js/src/gamecontrol.js'
-import { AppContainer } from './main'
+import gameControl from 'gamecontroller.js/src/gamecontrol.js';
+import { AppContainer } from './main';
 import { cancelAudio } from './util';
+
+function doNothingOnWindowBlurWrapper(callback: Function) {
+  return () => {
+    if (document.hasFocus()) {
+      callback();
+    }
+  };
+}
 
 export class ControllerController {
   private app: AppContainer;
 
-  private secondary = false
+  private secondary = false;
 
-  constructor (appInstance: AppContainer) {
+  constructor(appInstance: AppContainer) {
     this.app = appInstance;
-    gameControl.on('connect', gamepad=>{
+    gameControl.on('connect', (gamepad) => {
       gamepad
-      .before('button0', ()=>{
-        this.app.revealNextPart()
-      })
-      .before('button1', () => {
-        cancelAudio()
-      })
-      .before('button14', ()=>{
-        this.app.arrowBackButton.click()
-      })
-      .before('button15', ()=>{
-        this.app.arrowForwardButton.click()
-      })
-      .before('button4', () => {
-        this.app.incrementPlaybackRate(-0.10)
-      })
-      .before('button5', () => {
-        this.app.incrementPlaybackRate(+0.10)
-      })
-      .before('button6', () => {
-        this.app.speakSourceParagraph()
-      })
-      .before('button7', ()=>{
-        this.app.speakButton.click()
-      })
-      .before('button8', () => {
-        this.app.speakTranslatedParagraph()
-      })
-      .before('button9', () => {
-        this.app.casinoButton.click()
-      })
-      // .before('button7', ()=>{
-      //   this.app.togglePlayInterval()
-      // })
-
-      // .before('button6', ()=>{this.app.clickListenButton()})
-      // .before('button4', ()=>{
-      //   if (this.secondary) {
-      //     this.app.videoElement.speedDown()
-      //   }
-      //   else {
-      //     this.app.clingVideoToStartTime()
-      //   }
-      // })
-      // .before('button5', ()=>{
-      //   if (this.secondary) {
-      //     this.app.videoElement.speedUp()
-      //   }
-      //   else {
-      //     this.app.clingVideoToEndTime()
-      //   }
-      // })
-      // .before('button10', ()=>this.app.clingStartTimeToVideoCurrentTime())
-      // .before('button11', ()=>this.app.clingEndTimeToVideoCurrentTime())
-
-      // .before('button6', ()=>this.secondary=true)
-      // .after('button6', ()=>this.secondary=false)
-
-
-      // .before('left0', ()=>this.app.stretchStartTimeToLeft(this.secondary ? 0.1 : 1))
-      // .before('right0', ()=>this.app.stretchStartTimeToRight(this.secondary ? 0.1 : 1))
-      // .before('left1', ()=>this.app.stretchEndTimeToLeft(this.secondary ? 0.1 : 1))
-      // .before('right1', ()=>this.app.stretchEndTimeToRight(this.secondary ? 0.1 : 1))
-    })
+        .before(
+          'button0',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.revealNextPart();
+          })
+        )
+        .before(
+          'button1',
+          doNothingOnWindowBlurWrapper(() => {
+            cancelAudio();
+          })
+        )
+        .before(
+          'button14',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.arrowBackButton.click();
+          })
+        )
+        .before(
+          'button15',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.arrowForwardButton.click();
+          })
+        )
+        .before(
+          'button4',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.incrementPlaybackRate(-0.1);
+          })
+        )
+        .before(
+          'button5',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.incrementPlaybackRate(+0.1);
+          })
+        )
+        .before(
+          'button6',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.speakSourceParagraph();
+          })
+        )
+        .before(
+          'button7',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.speakButton.click();
+          })
+        )
+        .before(
+          'button8',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.speakTranslatedParagraph();
+          })
+        )
+        .before(
+          'button9',
+          doNothingOnWindowBlurWrapper(() => {
+            this.app.casinoButton.click();
+          })
+        );
+    });
   }
 }
 
-const shuffle = new Audio('./audio/shuffle.mp3')
-function playShuffle () { return shuffle.play(); }
+const shuffle = new Audio('./assets/audio/shuffle.mp3');
+function playShuffle() {
+  return shuffle.play();
+}

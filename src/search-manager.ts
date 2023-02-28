@@ -2,7 +2,7 @@ import { html, LitElement, nothing, PropertyValueMap } from 'lit'
 import { customElement, query, queryAll, state } from 'lit/decorators.js'
 import { JlptWordEntry, Kanji } from './types';
 
-import lemmas from '../docs/data/lemmas.json'
+import lemmas from '../assets/data/lemmas.json'
 import { searchManagerStyles } from './styles/searchManagerStyles';
 import { googleImageSearch, jisho, mdbg, naver, playJapaneseAudio } from './util';
 import {hasChinese} from 'asian-regexps'
@@ -25,12 +25,12 @@ import './search-history'
 import {SearchHistory} from "./search-history";
 import { ConcealableSpan } from './concealable-span';
 
-import _kanjis from '../docs/data/kanjis.json'
-import jlpt5 from'../docs/data/jlpt5-words.json'
-import jlpt4 from '../docs/data/jlpt4-words.json'
-import jlpt3 from '../docs/data/jlpt3-words.json'
-import jlpt2 from '../docs/data/jlpt2-words.json'
-import jlpt1 from '../docs/data/jlpt1-words.json'
+import _kanjis from '../assets/data/kanjis.json'
+import jlpt5 from'../assets/data/jlpt5-words.json'
+import jlpt4 from '../assets/data/jlpt4-words.json'
+import jlpt3 from '../assets/data/jlpt3-words.json'
+import jlpt2 from '../assets/data/jlpt2-words.json'
+import jlpt1 from '../assets/data/jlpt1-words.json'
 import { sharedStyles } from './styles/sharedStyles';
 import { Menu } from '@material/mwc-menu';
 import { SearchItemElement } from './search-item-element';

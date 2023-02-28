@@ -1,4 +1,4 @@
-import _kanjis from '../docs/data/kanjis.json'
+import _kanjis from '../assets/data/kanjis.json'
 import { Kanji } from './types'
 import {isFullChinese, isFullJapanese} from "asian-regexps";
 import { cancelSpeech, speakJapanese } from './speech';
@@ -41,7 +41,7 @@ export function getKanjiData (character: string) {
   return (_kanjis as Kanji[]).find(k => k[1] === character)
 }
 
-const bellAudio = new Audio('./audio/bell.mp3')
+const bellAudio = new Audio('./assets/audio/bell.mp3')
 export async function ringTheBell() {
   await bellAudio.play()
 }

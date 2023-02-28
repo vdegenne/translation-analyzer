@@ -5,11 +5,11 @@ import {terser} from 'rollup-plugin-terser'
 
 export default {
   input: 'src/main.ts',
-  output: { file: 'docs/app.js', format: 'esm', sourcemap: true },
+  output: { file: 'public/app.js', format: 'esm' },
   plugins: [
     tsc(),
     resolve(),
     json(),
-    process.env.minify ? terser() : {},
+    terser()
   ]
 }
